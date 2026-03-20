@@ -1,6 +1,11 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
+import {
+  bookingConfirmationEmail,
+  newBookingNotificationEmail,
+} from "@/lib/email-templates";
 import { z } from "zod";
 
 const BookingSchema = z.object({
@@ -213,7 +218,62 @@ export async function createBooking(formData: FormData): Promise<{
     },
   });
 
-  // TODO: Send confirmation emails via Resend
+  // Send confirmation emails
+  const formattedDate = startTime.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const formattedTime = startTime.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  // Get tenant owner for notification
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: service.tenantId },
+    include: { owner: true },
+  });
+
+  // Send confirmation to client (non-blocking)
+  sendEmail({
+    to: clientEmail.toLowerCase(),
+    subject: `Booking Confirmed - ${service.name} at ${service.tenant.businessName}`,
+    html: bookingConfirmationEmail({
+      businessName: service.tenant.businessName,
+      primaryColor: service.tenant.primaryColor,
+      clientName,
+      serviceName: service.name,
+      date: formattedDate,
+      time: formattedTime,
+      duration: service.duration,
+      notes,
+    }),
+  }).catch(console.error);
+
+  // Send notification to business owner (non-blocking)
+  if (tenant?.owner?.email) {
+    sendEmail({
+      to: tenant.owner.email,
+      subject: `New Booking: ${clientName} - ${service.name}`,
+      html: newBookingNotificationEmail({
+        businessName: tenant.businessName,
+        primaryColor: tenant.primaryColor,
+        clientName,
+        clientEmail: clientEmail.toLowerCase(),
+        clientPhone,
+        serviceName: service.name,
+        date: formattedDate,
+        time: formattedTime,
+        duration: service.duration,
+        notes,
+        dashboardUrl: `${process.env.AUTH_URL || "http://localhost:3000"}/dashboard/appointments`,
+      }),
+      replyTo: clientEmail.toLowerCase(),
+    }).catch(console.error);
+  }
 
   return { success: true, appointmentId: appointment.id };
 }

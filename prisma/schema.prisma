@@ -187,6 +187,9 @@ model Appointment {
   status    AppointmentStatus @default(PENDING)
   notes     String?
   
+  // Notifications
+  reminderSent Boolean @default(false)
+  
   // Cancellation
   cancelledAt   DateTime?
   cancelReason  String?
