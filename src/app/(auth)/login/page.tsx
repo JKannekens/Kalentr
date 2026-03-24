@@ -28,6 +28,11 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
+        if (result.code === "not_verified") {
+          setError("Please verify your email before logging in.");
+          return;
+        }
+
         setError("Invalid email or password");
       } else {
         router.push("/dashboard");
@@ -82,6 +87,15 @@ export default function LoginPage() {
           />
         </div>
 
+        <div className="text-right">
+          <Link
+            href="/forgot"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
+
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Signing in..." : "Sign in"}
         </Button>
@@ -89,7 +103,10 @@ export default function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-medium text-blue-600 hover:underline">
+        <Link
+          href="/register"
+          className="font-medium text-blue-600 hover:underline"
+        >
           Sign up
         </Link>
       </p>

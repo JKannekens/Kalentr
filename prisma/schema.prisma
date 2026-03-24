@@ -20,6 +20,12 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   password      String?
+  resetTokenHash String?
+  resetTokenExpiry DateTime?
+  // Email verification
+  verificationTokenHash String?
+  verificationTokenExpiry DateTime?
+  isVerified   Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -128,8 +134,6 @@ model Service {
   tenant      Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   
   name        String
-  description String?
-  duration    Int     // Duration in minutes
   price       Int?    // Price in cents (for future use)
   isActive    Boolean @default(true)
 
