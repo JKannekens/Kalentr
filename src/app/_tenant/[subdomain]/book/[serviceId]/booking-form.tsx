@@ -64,7 +64,7 @@ export function BookingForm({
     setStep("details");
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selectedDate || !selectedTime) return;
 

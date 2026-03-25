@@ -16,22 +16,20 @@ export async function updateAvailability(formData: FormData) {
     return { success: false, error: "No business found" };
   }
 
-  // Parse form data for each day
+  // Parse form data for each day (always write all days so saved state is deterministic)
   const updates: { dayOfWeek: number; startTime: string; endTime: string; isActive: boolean }[] = [];
 
   for (let i = 0; i < 7; i++) {
     const isActive = formData.get(`day-${i}-active`) === "on";
-    const startTime = formData.get(`day-${i}-start`) as string;
-    const endTime = formData.get(`day-${i}-end`) as string;
+    const startTime = (formData.get(`day-${i}-start`) as string) || "09:00";
+    const endTime = (formData.get(`day-${i}-end`) as string) || "17:00";
 
-    if (isActive && startTime && endTime) {
-      updates.push({
-        dayOfWeek: i,
-        startTime,
-        endTime,
-        isActive: true,
-      });
-    }
+    updates.push({
+      dayOfWeek: i,
+      startTime,
+      endTime,
+      isActive,
+    });
   }
 
   // Delete existing availability
