@@ -1,202 +1,188 @@
 # CLAUDE.md
 
-## Project Overview
+## Project
 
-**Kalentr** is a SaaS platform that enables freelancers and small businesses to:
+**Kalentr** — SaaS for freelancers to create microsites and manage bookings.
 
-- Create a simple, customizable microsite
-- Manage availability and appointments
-- Share booking links with clients
-
-The product focuses on **simplicity, speed, and great UX**, avoiding unnecessary complexity.
+Focus: **simplicity, speed, great UX**
 
 ---
 
-## Core Product Principles
+## Principles
 
-- **Simplicity first** — users should set up their page in minutes
-- **Fast interactions** — minimal loading, responsive UI
-- **Mobile-friendly** — many users will manage bookings on mobile
-- **Clean design** — leverage shadcn UI and Tailwind for consistency
-- **Self-service** — users should not need support to get started
-
----
-
-## Tech Stack
-
-- **Framework:** Next.js (App Router)
-- **Language:** TypeScript (strict)
-- **Styling:** Tailwind CSS + shadcn/ui
-- **Database:** PostgreSQL
-- **ORM:** Prisma
-- **Package Manager:** pnpm
+- Simplicity first (setup in minutes)
+- Fast, responsive UI
+- Mobile-friendly
+- Clean, minimal design (shadcn + Tailwind)
+- Self-service (no support needed)
 
 ---
 
-## Architecture Guidelines
+## Priority Order
 
-### General
-
-- Prefer **server components** unless interactivity is required
-- Use **server actions** for mutations when possible
-- Keep business logic **out of components**, place it in services/lib
-- Avoid fat components — keep them focused and small
-
-### Suggested Structure
-
-- `/app` → routes, layouts, server components
-- `/components` → reusable UI components
-- `/lib` → utilities, helpers, shared logic
-- `/services` → business logic (appointments, users, availability)
-- `/db` → Prisma client and database-related logic
+1. Correctness
+2. Simplicity
+3. Performance
+4. Developer speed
 
 ---
 
-## Database & Prisma
+## Stack
 
-### Guidelines
-
-- Use clear and explicit schema naming
-- Always model relationships properly (User → Availability → Bookings)
-- Avoid over-normalization — optimize for readability and queries
-
-### Example Entities
-
-- User
-- Microsite (slug, branding, description)
-- Availability (time slots, rules)
-- Booking (date, duration, client info)
-
-### DO
-
-- Use Prisma types everywhere
-- Handle edge cases (double bookings, timezone issues)
-
-### DON'T
-
-- Write raw SQL unless necessary
-- Duplicate business logic outside services
+- Next.js (App Router)
+- TypeScript (strict)
+- Tailwind + shadcn/ui
+- PostgreSQL + Prisma
+- pnpm
 
 ---
 
-## UI & Styling
+## Architecture
 
-### Principles
+- Prefer **server components**
+- Use **server actions** for mutations
+- No business logic in components → use `/services`
+- Keep components small and focused
 
-- Use **shadcn components as base**
-- Keep UI minimal and clean
-- Prioritize usability over flashy design
-
-### Tailwind Guidelines
-
-- Avoid long class chains → extract into components when needed
-- Use consistent spacing and sizing
-- Stick to a defined design system (colors, radius, typography)
-
----
-
-## When Building Features
-
-### Always Think:
-
-- Can a freelancer understand this instantly?
-- Is this the fastest way to complete the task?
-- Can this be simplified further?
+Structure:
+- `/app` → routes
+- `/components` → UI
+- `/services` → business logic
+- `/lib` → shared utils
+- `/db` → Prisma
 
 ---
 
-## Booking System Rules
+## Data Rules
 
+- Store all dates in **UTC**
+- Convert to user timezone in UI only
 - Prevent double bookings
-- Handle timezones properly (store in UTC)
-- Keep booking flow frictionless:
-  - Select service
-  - Pick time
-  - Enter details
-  - Confirm
+- Always scope data by `userId` (multi-tenant)
 
 ---
 
-## Code Guidelines
+## Database
 
-### DO
+Entities:
+- User
+- Microsite
+- Availability
+- Booking
 
-- Use strict TypeScript (no `any`)
-- Write small, reusable functions
-- Keep logic readable and predictable
+Rules:
+- Use Prisma types
+- Model relationships clearly
+- Avoid over-normalization
+- No raw SQL unless necessary
+
+---
+
+## Validation & Security
+
+- Validate all input at the boundary (server actions)
+- Never trust client input
+- Sanitize user content
+- Protect all routes/actions
+- Never expose sensitive data
+
+---
+
+## Code
+
+DO:
+- Strict TypeScript
+- Small, reusable functions
 - Follow existing patterns
 
-### DON'T
+DON’T:
+- Over-engineer
+- Add unnecessary abstractions
+- Mix UI + business logic
 
-- Over-engineer solutions
-- Introduce unnecessary abstractions
-- Mix UI and business logic
+---
+
+## UI
+
+- Use shadcn as base
+- Keep UI minimal
+- Extract large Tailwind class blocks into components
+- Stay consistent (spacing, typography)
 
 ---
 
 ## Performance
 
-- Prefer server-side data fetching
-- Minimize client-side state
+- Prefer server-side fetching
+- Minimize client state
 - Avoid unnecessary re-renders
-- Lazy load where appropriate
+- Lazy load when useful
 
 ---
 
-## Security
+## Errors
 
-- Validate all inputs (especially booking forms)
-- Sanitize user-generated content
-- Protect routes and actions properly
-- Never expose sensitive data
-
----
-
-## Testing (Optional but Recommended)
-
-- Focus on critical flows:
-  - Booking creation
-  - Availability logic
-
-- Keep tests simple and focused
+- Show user-friendly messages
+- Log detailed errors server-side
+- Never leak internal errors
 
 ---
 
-## Communication Style (for Claude)
+## Naming
 
-When assisting with this project:
+- Use clear names (`createBooking`, not `handleSubmit`)
+- Avoid unclear abbreviations
+
+---
+
+## Scope
+
+- Do not add features unless asked
+- Stick to the task
+
+---
+
+## Testing
+
+- Focus on booking + availability
+- Keep tests simple
+
+---
+
+## Communication (Claude)
 
 - Be concise and practical
-- Suggest improvements when relevant
-- Avoid overcomplicating solutions
+- Ask if unsure before implementing
 - Prefer production-ready code
-- Ask questions if requirements are unclear
+
+Reply format:
+Done. [one sentence summary]  
+Changed: [FileName] - Lines [X-Y]
+
+- No code blocks
+- No explanations
 
 ---
 
-## What to Optimize For
+## Optimize For
 
-- Developer speed
+- Speed
 - Clean architecture
-- Scalability (multi-tenant SaaS)
-- Great user experience
+- Multi-tenant scalability
+- Great UX
 
 ---
 
 ## Anti-Goals
 
-- No unnecessary enterprise patterns
-- No premature microservices
-- No overly complex state management
+- No enterprise overengineering
+- No microservices
+- No complex state management
 
 ---
 
-## Notes
+## Rule
 
-Kalentr should feel:
-
-- Effortless to use
-- Fast and responsive
-- Clean and modern
-
-If in doubt: **simplify the solution.**
+- If in doubt: **simplify**
+- “See FEATURES.md for active feature backlog and status tracking.”
+Then all humans/agents know where to look.

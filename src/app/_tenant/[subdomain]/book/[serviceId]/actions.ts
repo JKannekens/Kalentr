@@ -13,7 +13,7 @@ const BookingSchema = z.object({
   date: z.string(),
   time: z.string(),
   clientName: z.string().min(2),
-  clientEmail: z.string().email(),
+  clientEmail: z.email(),
   clientPhone: z.string().optional(),
   notes: z.string().optional(),
 });

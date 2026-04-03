@@ -30,19 +30,23 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const hasSavedAvailability = initialAvailability.size > 0;
+
   const [schedule, setSchedule] = useState(() => {
     return DAYS.map((_, i) => {
       const existing = initialAvailability.get(i);
       return {
         dayOfWeek: i,
-        isActive: existing?.isActive ?? (i >= 1 && i <= 5), // Default Mon-Fri
+        isActive:
+          existing?.isActive ??
+          (hasSavedAvailability ? false : i >= 1 && i <= 5), // Default Mon-Fri only on new setup
         startTime: existing?.startTime ?? "09:00",
         endTime: existing?.endTime ?? "17:00",
       };
     });
   });
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -52,9 +56,9 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
     schedule.forEach((day) => {
       if (day.isActive) {
         formData.set(`day-${day.dayOfWeek}-active`, "on");
-        formData.set(`day-${day.dayOfWeek}-start`, day.startTime);
-        formData.set(`day-${day.dayOfWeek}-end`, day.endTime);
       }
+      formData.set(`day-${day.dayOfWeek}-start`, day.startTime);
+      formData.set(`day-${day.dayOfWeek}-end`, day.endTime);
     });
 
     try {

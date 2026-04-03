@@ -45,7 +45,7 @@ function ServiceCard({ service }: { service: Service }) {
     }
   }
 
-  async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
+  async function handleUpdate(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
