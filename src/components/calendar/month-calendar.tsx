@@ -23,7 +23,8 @@ const APPOINTMENT_COLORS = [
 
 function getColor(id: string) {
   let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < id.length; i++)
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
   return APPOINTMENT_COLORS[hash % APPOINTMENT_COLORS.length];
 }
 
@@ -64,7 +65,11 @@ export function MonthCalendar({
     appointmentsByDate.get(key)!.push(app);
   });
 
-  const getDayKey = (day: number, isCurrentMonth: boolean, isPrevMonth: boolean) => {
+  const getDayKey = (
+    day: number,
+    isCurrentMonth: boolean,
+    isPrevMonth: boolean,
+  ) => {
     if (isPrevMonth) return toLocalKey(new Date(year, month - 1, day));
     if (isCurrentMonth) return toLocalKey(new Date(year, month, day));
     return toLocalKey(new Date(year, month + 1, day));
@@ -72,7 +77,11 @@ export function MonthCalendar({
 
   const isToday = (day: number) => {
     const today = new Date();
-    return day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    return (
+      day === today.getDate() &&
+      month === today.getMonth() &&
+      year === today.getFullYear()
+    );
   };
 
   const isSelected = (day: number) =>
@@ -128,9 +137,11 @@ export function MonthCalendar({
         {prevMonthDays.map((day) => (
           <div
             key={`prev-${day}`}
-            className="min-h-[110px] p-2 border-r border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50"
+            className="min-h-27.5 p-2 border-r border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50"
           >
-            <span className="text-sm text-gray-300 dark:text-gray-700">{day}</span>
+            <span className="text-sm text-gray-300 dark:text-gray-700">
+              {day}
+            </span>
           </div>
         ))}
 
@@ -144,10 +155,11 @@ export function MonthCalendar({
           const overflow = appts.length - visible.length;
 
           return (
-            <div
+            <button
+              type="button"
               key={`current-${day}`}
               onClick={() => onDateSelect(new Date(year, month, day))}
-              className={`min-h-[110px] p-2 cursor-pointer transition-colors border-r border-b border-gray-100 dark:border-gray-800 ${
+              className={`flex flex-col min-h-27.5 p-2 cursor-pointer transition-colors border-r border-b border-gray-100 dark:border-gray-800 ${
                 selected
                   ? "bg-blue-50 dark:bg-blue-950/40"
                   : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
@@ -185,7 +197,7 @@ export function MonthCalendar({
                   </div>
                 ))}
               </div>
-            </div>
+            </button>
           );
         })}
 
@@ -193,9 +205,11 @@ export function MonthCalendar({
         {nextMonthDays.map((day) => (
           <div
             key={`next-${day}`}
-            className="min-h-[110px] p-2 border-r border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50"
+            className="min-h-27.5 p-2 border-r border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50"
           >
-            <span className="text-sm text-gray-300 dark:text-gray-700">{day}</span>
+            <span className="text-sm text-gray-300 dark:text-gray-700">
+              {day}
+            </span>
           </div>
         ))}
       </div>
