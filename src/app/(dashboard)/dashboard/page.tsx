@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { getTenantByOwner } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { DashboardContent } from "@/components/dashboard/dashboard-content";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -18,9 +18,16 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const [serviceCount, appointmentCount] = await Promise.all([
-    prisma.service.count({ where: { tenantId: tenant.id } }),
-    prisma.appointment.count({ where: { tenantId: tenant.id } }),
+  const [services, appointments] = await Promise.all([
+    prisma.service.findMany({
+      where: { tenantId: tenant.id, isActive: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.appointment.findMany({
+      where: { tenantId: tenant.id },
+      include: { service: true },
+      orderBy: { startTime: "desc" },
+    }),
   ]);
 
   const microSiteUrl =
@@ -45,61 +52,11 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <DashboardCard
-          title="Services"
-          description="Manage the services you offer"
-          href="/dashboard/services"
-          count={serviceCount}
-        />
-        <DashboardCard
-          title="Availability"
-          description="Set your weekly schedule"
-          href="/dashboard/availability"
-        />
-        <DashboardCard
-          title="Appointments"
-          description="View and manage bookings"
-          href="/dashboard/appointments"
-          count={appointmentCount}
-        />
-        <DashboardCard
-          title="Settings"
-          description="Customize your microsite"
-          href="/dashboard/settings"
-        />
-      </div>
+      <DashboardContent
+        appointments={appointments}
+        services={services}
+        timezone={tenant.timezone}
+      />
     </div>
-  );
-}
-
-function DashboardCard({
-  title,
-  description,
-  href,
-  count,
-}: {
-  title: string;
-  description: string;
-  href: string;
-  count?: number;
-}) {
-  return (
-    <Link
-      href={href}
-      className="block rounded-lg border bg-white p-6 shadow-sm transition hover:shadow-md dark:bg-gray-800 dark:border-gray-700"
-    >
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        {count !== undefined && (
-          <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-sm font-medium dark:bg-gray-700">
-            {count}
-          </span>
-        )}
-      </div>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        {description}
-      </p>
-    </Link>
   );
 }
