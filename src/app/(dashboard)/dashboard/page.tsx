@@ -1,25 +1,32 @@
 import { auth } from "@/lib/auth";
 import { getTenantByOwner } from "@/lib/tenant";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await auth();
-  
+
   if (!session?.user?.id) {
     redirect("/login");
   }
-  
+
   const tenant = await getTenantByOwner(session.user.id);
-  
+
   // If user doesn't have a tenant yet, redirect to onboarding
   if (!tenant) {
     redirect("/onboarding");
   }
-  
-  const microSiteUrl = process.env.NODE_ENV === "development"
-    ? `http://${tenant.subdomain}.localhost:3000`
-    : `https://${tenant.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+
+  const [serviceCount, appointmentCount] = await Promise.all([
+    prisma.service.count({ where: { tenantId: tenant.id } }),
+    prisma.appointment.count({ where: { tenantId: tenant.id } }),
+  ]);
+
+  const microSiteUrl =
+    process.env.NODE_ENV === "development"
+      ? `http://${tenant.subdomain}.localhost:3000`
+      : `https://${tenant.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 
   return (
     <div className="space-y-8">
@@ -27,7 +34,7 @@ export default async function DashboardPage() {
         <h1 className="text-3xl font-bold">{tenant.businessName}</h1>
         <p className="mt-1 text-gray-600 dark:text-gray-400">
           Your booking microsite:{" "}
-          <a 
+          <a
             href={microSiteUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -37,13 +44,13 @@ export default async function DashboardPage() {
           </a>
         </p>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <DashboardCard
           title="Services"
           description="Manage the services you offer"
           href="/dashboard/services"
-          count={0}
+          count={serviceCount}
         />
         <DashboardCard
           title="Availability"
@@ -54,7 +61,7 @@ export default async function DashboardPage() {
           title="Appointments"
           description="View and manage bookings"
           href="/dashboard/appointments"
-          count={0}
+          count={appointmentCount}
         />
         <DashboardCard
           title="Settings"
@@ -90,7 +97,9 @@ function DashboardCard({
           </span>
         )}
       </div>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{description}</p>
+      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        {description}
+      </p>
     </Link>
   );
 }

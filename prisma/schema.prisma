@@ -134,6 +134,8 @@ model Service {
   tenant      Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   
   name        String
+  description String?
+  duration    Int     // Duration in minutes
   price       Int?    // Price in cents (for future use)
   isActive    Boolean @default(true)
 
