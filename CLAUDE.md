@@ -33,7 +33,7 @@ Focus: **simplicity, speed, great UX**
 - TypeScript (strict)
 - Tailwind + shadcn/ui
 - PostgreSQL + Prisma
-- pnpm
+- npm
 
 ---
 
@@ -45,6 +45,7 @@ Focus: **simplicity, speed, great UX**
 - Keep components small and focused
 
 Structure:
+
 - `/app` → routes
 - `/components` → UI
 - `/services` → business logic
@@ -65,12 +66,14 @@ Structure:
 ## Database
 
 Entities:
+
 - User
 - Microsite
 - Availability
 - Booking
 
 Rules:
+
 - Use Prisma types
 - Model relationships clearly
 - Avoid over-normalization
@@ -91,11 +94,13 @@ Rules:
 ## Code
 
 DO:
+
 - Strict TypeScript
 - Small, reusable functions
 - Follow existing patterns
 
 DON’T:
+
 - Over-engineer
 - Add unnecessary abstractions
 - Mix UI + business logic
@@ -105,7 +110,6 @@ DON’T:
 ## UI
 
 - Use shadcn as base
-- Keep UI minimal
 - Extract large Tailwind class blocks into components
 - Stay consistent (spacing, typography)
 
@@ -151,16 +155,10 @@ DON’T:
 
 ## Communication (Claude)
 
-- Be concise and practical
-- Ask if unsure before implementing
-- Prefer production-ready code
-
-Reply format:
-Done. [one sentence summary]  
-Changed: [FileName] - Lines [X-Y]
-
+- Reply format: Done. [one sentence summary] Changed: [FileName] - Lines [X-Y]
 - No code blocks
 - No explanations
+- Reduce the amount of tokens needed for a response I would rather want you to explain in 1 sentence whats wrong or what changed.
 
 ---
 
@@ -185,4 +183,4 @@ Changed: [FileName] - Lines [X-Y]
 
 - If in doubt: **simplify**
 - “See FEATURES.md for active feature backlog and status tracking.”
-Then all humans/agents know where to look.
+  Then all humans/agents know where to look.

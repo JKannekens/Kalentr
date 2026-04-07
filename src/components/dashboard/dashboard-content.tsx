@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { MonthCalendar } from "@/components/calendar/month-calendar";
+import { Calendar } from "@/components/calendar/calendar";
 import { ServicesSidebar } from "@/components/dashboard/services-sidebar";
 import { SettingsShortcuts } from "@/components/dashboard/settings-shortcuts";
 import { X } from "lucide-react";
@@ -17,15 +17,20 @@ interface DashboardContentProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-  CONFIRMED: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+  PENDING:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+  CONFIRMED:
+    "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
   CANCELLED: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
   COMPLETED: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
   NO_SHOW: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400",
 };
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 export function DashboardContent({
@@ -52,7 +57,10 @@ export function DashboardContent({
   useEffect(() => {
     if (!popover) return;
     function handleClick(e: MouseEvent) {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(e.target as Node)
+      ) {
         setPopover(null);
       }
     }
@@ -67,7 +75,10 @@ export function DashboardContent({
     };
   }, [popover]);
 
-  function openPopover(appointment: AppointmentWithService, anchorRect: DOMRect) {
+  function openPopover(
+    appointment: AppointmentWithService,
+    anchorRect: DOMRect,
+  ) {
     setPopover({ appointment, rect: anchorRect });
   }
 
@@ -84,18 +95,27 @@ export function DashboardContent({
     left = Math.max(8, Math.min(left, viewportW - popoverWidth - 8));
 
     const spaceBelow = viewportH - rect.bottom;
-    const top = spaceBelow > 200 ? rect.bottom + gap + window.scrollY : rect.top - gap + window.scrollY;
+    const top =
+      spaceBelow > 200
+        ? rect.bottom + gap + window.scrollY
+        : rect.top - gap + window.scrollY;
     const transformOrigin = spaceBelow > 200 ? "top center" : "bottom center";
     const translateY = spaceBelow > 200 ? "0" : "-100%";
 
-    return { top, left, width: popoverWidth, transformOrigin, transform: `translateY(${translateY})` };
+    return {
+      top,
+      left,
+      width: popoverWidth,
+      transformOrigin,
+      transform: `translateY(${translateY})`,
+    };
   })();
 
   return (
     <>
       <div className="grid gap-6 lg:grid-cols-4">
         <div className="lg:col-span-3">
-          <MonthCalendar
+          <Calendar
             appointments={sortedAppointments}
             selectedDate={selectedDate}
             onDateSelect={setSelectedDate}
@@ -166,8 +186,12 @@ export function DashboardContent({
 
           {popover.appointment.notes && (
             <div className="border-t pt-3 mt-3 dark:border-gray-800">
-              <p className="font-medium text-gray-900 dark:text-gray-100 mb-0.5">Note</p>
-              <p className="text-gray-500 dark:text-gray-400">{popover.appointment.notes}</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100 mb-0.5">
+                Note
+              </p>
+              <p className="text-gray-500 dark:text-gray-400">
+                {popover.appointment.notes}
+              </p>
             </div>
           )}
         </div>
