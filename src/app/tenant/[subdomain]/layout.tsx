@@ -18,7 +18,7 @@ export default async function TenantLayout({
 
   return (
     <div 
-      className="min-h-screen"
+      className="min-h-screen flex flex-col"
       style={{ "--primary-color": tenant.primaryColor } as React.CSSProperties}
     >
       <header className="border-b bg-white dark:bg-gray-900">
@@ -44,7 +44,7 @@ export default async function TenantLayout({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-4xl px-4 py-8">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
         {children}
       </main>
       <footer className="border-t bg-gray-50 dark:bg-gray-900">

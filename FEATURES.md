@@ -15,17 +15,17 @@
 - [ ] Theme settings and branding (logo, colors, copy)
 - [ ] Custom domain support (future)
 
-## 3. Services
+## 3. Ser vices
 - [x] Create/update/delete service in dashboard
 - [x] List services (`/dashboard/services`)
 - [ ] Service durations/prices/description in book page
-- [ ] Category/tag for services
+- [x] Category/tag for services
 
 ## 4. Availability
 - [x] Weekly availability form
 - [x] Persist availability per tenant
 - [ ] Availability exceptions/holiday blocking
-- [ ] “Time off” custom date ranges
+- [x] “Time off” custom date ranges
 - [ ] Multi-week schedule and pickup/lead-time rules
 
 ## 5. Booking flow (MVP)
