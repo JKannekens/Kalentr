@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { createBooking, getAvailableSlots } from "./actions";
 import type { Service, Availability, BookingConfig } from "@prisma/client";
 import type { TenantInfo } from "@/lib/tenant";
@@ -32,11 +33,15 @@ export function BookingForm({
   const [error, setError] = useState<string | null>(null);
 
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const maxDate = new Date();
   maxDate.setDate(maxDate.getDate() + (bookingConfig?.maxAdvanceDays || 30));
 
-  // Generate calendar dates
-  const dates = generateDates(today, maxDate, availability);
+  const [calendarMonth, setCalendarMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+
+  const availableDays = new Set(
+    availability.filter((a) => a.isActive).map((a) => a.dayOfWeek)
+  );
 
   async function handleDateSelect(date: Date) {
     setSelectedDate(date);
@@ -143,31 +148,73 @@ export function BookingForm({
 
       {/* Date selection */}
       {step === "date" && (
-        <div>
-          <h3 className="text-lg font-medium mb-4">Select a Date</h3>
-          <div className="grid grid-cols-7 gap-2">
+        <div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 overflow-hidden">
+          {/* Month header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1))}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h3 className="text-base font-semibold tracking-tight">
+              {new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(calendarMonth)}
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1))}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Day labels */}
+          <div className="grid grid-cols-7 border-b border-l dark:border-gray-800 border-gray-100">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
+              <div key={day} className="py-2 text-center text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide border-r border-gray-100 dark:border-gray-800">
                 {day}
               </div>
             ))}
-            {dates.map((dateInfo, i) => (
-              <button
-                key={i}
-                disabled={!dateInfo.available}
-                onClick={() => dateInfo.available && handleDateSelect(dateInfo.date)}
-                className={`
-                  aspect-square rounded-lg text-sm
-                  ${!dateInfo.available
-                    ? "text-gray-300 cursor-not-allowed"
-                    : "hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer"
-                  }
-                  ${dateInfo.isToday ? "ring-1 ring-blue-500" : ""}
-                `}
-              >
-                {dateInfo.date.getDate()}
-              </button>
-            ))}
+          </div>
+
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7 border-l border-t border-gray-100 dark:border-gray-800">
+            {buildMonthCells(calendarMonth).map((cell, i) => {
+              if (!cell.currentMonth) {
+                return (
+                  <div key={i} className="min-h-12 p-2 border-r border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+                    <span className="text-sm text-gray-300 dark:text-gray-700">{cell.day}</span>
+                  </div>
+                );
+              }
+              const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), cell.day);
+              const isPast = date < today;
+              const isAvailable = !isPast && availableDays.has(date.getDay()) && date <= maxDate;
+              const isToday = date.getTime() === today.getTime();
+              const isSelected = selectedDate?.getTime() === date.getTime();
+
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  disabled={!isAvailable}
+                  onClick={() => isAvailable && handleDateSelect(date)}
+                  className={`min-h-12 p-2 border-r border-b border-gray-100 dark:border-gray-800 flex items-start transition-colors
+                    ${isSelected ? "bg-blue-50 dark:bg-blue-950/40" : isAvailable ? "hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer" : "cursor-not-allowed"}
+                  `}
+                >
+                  <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium
+                    ${isToday ? "bg-blue-600 text-white" : isSelected ? "text-blue-600 dark:text-blue-400 font-semibold" : isAvailable ? "text-gray-700 dark:text-gray-300" : "text-gray-300 dark:text-gray-700"}
+                  `}>
+                    {cell.day}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -292,38 +339,24 @@ export function BookingForm({
   );
 }
 
-function generateDates(
-  start: Date,
-  end: Date,
-  availability: Availability[]
-): { date: Date; available: boolean; isToday: boolean }[] {
-  const dates: { date: Date; available: boolean; isToday: boolean }[] = [];
-  const availableDays = new Set(
-    availability.filter((a) => a.isActive).map((a) => a.dayOfWeek)
-  );
+function buildMonthCells(month: Date): { day: number; currentMonth: boolean }[] {
+  const year = month.getFullYear();
+  const m = month.getMonth();
+  const firstDay = new Date(year, m, 1).getDay();
+  const daysInMonth = new Date(year, m + 1, 0).getDate();
+  const prevMonthDays = new Date(year, m, 0).getDate();
 
-  // Start from the beginning of the week
-  const current = new Date(start);
-  current.setDate(current.getDate() - current.getDay());
+  const cells: { day: number; currentMonth: boolean }[] = [];
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  for (let i = firstDay - 1; i >= 0; i--)
+    cells.push({ day: prevMonthDays - i, currentMonth: false });
 
-  // Generate 5 weeks of dates
-  for (let i = 0; i < 35; i++) {
-    const date = new Date(current);
-    date.setDate(current.getDate() + i);
+  for (let d = 1; d <= daysInMonth; d++)
+    cells.push({ day: d, currentMonth: true });
 
-    const isPast = date < today;
-    const isAvailableDay = availableDays.has(date.getDay());
-    const isWithinRange = date >= start && date <= end;
+  const remaining = cells.length % 7 === 0 ? 0 : 7 - (cells.length % 7);
+  for (let d = 1; d <= remaining; d++)
+    cells.push({ day: d, currentMonth: false });
 
-    dates.push({
-      date,
-      available: !isPast && isAvailableDay && isWithinRange,
-      isToday: date.getTime() === today.getTime(),
-    });
-  }
-
-  return dates;
+  return cells;
 }

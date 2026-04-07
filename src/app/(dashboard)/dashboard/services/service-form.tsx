@@ -1,10 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { createService } from "./actions";
 
-export function ServiceForm() {
+function CategoryInput({ categories }: { categories: string[] }) {
+  const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const suggestions = categories.filter(
+    (c) => c.toLowerCase().includes(value.toLowerCase()) && c !== value
+  );
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        id="category"
+        name="category"
+        type="text"
+        value={value}
+        onChange={(e) => { setValue(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 100)}
+        placeholder="e.g. Consultation, Treatment, Workshop"
+        className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+      />
+      {open && suggestions.length > 0 && (
+        <ul className="absolute z-10 mt-1 w-full rounded-md border bg-white shadow-md dark:bg-gray-700 dark:border-gray-600">
+          {suggestions.map((cat) => (
+            <li
+              key={cat}
+              onMouseDown={() => { setValue(cat); setOpen(false); }}
+              className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-600"
+            >
+              {cat}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export function ServiceForm({ categories = [] }: { categories?: string[] }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -15,7 +54,8 @@ export function ServiceForm() {
     setSuccess(false);
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     formData.set("isActive", "true");
 
     try {
@@ -24,7 +64,7 @@ export function ServiceForm() {
         setError(result.error || "Failed to create service");
       } else {
         setSuccess(true);
-        e.currentTarget.reset();
+        form.reset();
       }
     } catch {
       setError("Something went wrong");
@@ -74,6 +114,13 @@ export function ServiceForm() {
             placeholder="What does this service include?"
             className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
           />
+        </div>
+
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium">
+            Category (optional)
+          </label>
+          <CategoryInput categories={categories} />
         </div>
 
         <div>

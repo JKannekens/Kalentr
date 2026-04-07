@@ -135,6 +135,7 @@ model Service {
   
   name        String
   description String?
+  category    String?
   duration    Int     // Duration in minutes
   price       Int?    // Price in cents (for future use)
   isActive    Boolean @default(true)

@@ -1,7 +1,7 @@
 import { getTenant } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { ServiceGrid } from "./service-grid";
 
 export default async function TenantHomePage({
   params,
@@ -43,32 +43,7 @@ export default async function TenantHomePage({
         Select a service to view available times
       </p>
       
-      <div className="grid gap-4 md:grid-cols-2">
-        {services.map((service) => (
-          <Link
-            key={service.id}
-            href={`/book/${service.id}`}
-            className="block rounded-lg border bg-white p-6 shadow-sm transition hover:shadow-md dark:bg-gray-800 dark:border-gray-700"
-          >
-            <h3 className="text-lg font-semibold">{service.name}</h3>
-            {service.description && (
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                {service.description}
-              </p>
-            )}
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-gray-500">
-                {service.duration} minutes
-              </span>
-              {service.price && (
-                <span className="font-medium">
-                  ${(service.price / 100).toFixed(2)}
-                </span>
-              )}
-            </div>
-          </Link>
-        ))}
-      </div>
+      <ServiceGrid services={services} />
     </div>
   );
 }

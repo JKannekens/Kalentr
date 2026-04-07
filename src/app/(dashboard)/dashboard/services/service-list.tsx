@@ -6,6 +6,11 @@ import { deleteService, updateService } from "./actions";
 import type { Service } from "@prisma/client";
 
 export function ServiceList({ services }: { services: Service[] }) {
+  const categories = Array.from(new Set(services.map((s) => s.category).filter(Boolean))) as string[];
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const filtered = activeCategory ? services.filter((s) => s.category === activeCategory) : services;
+
   if (services.length === 0) {
     return (
       <div className="rounded-lg border bg-white p-8 text-center dark:bg-gray-800 dark:border-gray-700">
@@ -16,7 +21,36 @@ export function ServiceList({ services }: { services: Service[] }) {
 
   return (
     <div className="space-y-4">
-      {services.map((service) => (
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveCategory(null)}
+            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+              activeCategory === null
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveCategory(cat)}
+              className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+                activeCategory === cat
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+      {filtered.map((service) => (
         <ServiceCard key={service.id} service={service} />
       ))}
     </div>
@@ -98,6 +132,17 @@ function ServiceCard({ service }: { service: Service }) {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium">Category (optional)</label>
+            <input
+              name="category"
+              type="text"
+              defaultValue={service.category || ""}
+              placeholder="e.g. Consultation, Treatment, Workshop"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium">Duration (min)</label>
@@ -147,8 +192,13 @@ function ServiceCard({ service }: { service: Service }) {
       
       <div className="flex items-start justify-between">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-semibold">{service.name}</h3>
+            {service.category && (
+              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                {service.category}
+              </span>
+            )}
             {!service.isActive && (
               <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400">
                 Inactive

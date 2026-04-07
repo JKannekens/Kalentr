@@ -9,6 +9,7 @@ import { z } from "zod";
 const ServiceSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().optional(),
+  category: z.string().optional(),
   duration: z.coerce.number().min(5, "Duration must be at least 5 minutes"),
   price: z.coerce.number().optional(),
   isActive: z.coerce.boolean().default(true),
@@ -28,8 +29,9 @@ export async function createService(formData: FormData) {
   const rawData = {
     name: formData.get("name") as string,
     description: (formData.get("description") as string) || undefined,
+    category: (formData.get("category") as string) || undefined,
     duration: formData.get("duration") as string,
-    price: formData.get("price") as string || undefined,
+    price: (formData.get("price") as string) || undefined,
     isActive: formData.get("isActive") === "true",
   };
 
@@ -45,6 +47,7 @@ export async function createService(formData: FormData) {
       tenantId: tenant.id,
       name: parsed.data.name,
       description: parsed.data.description,
+      category: parsed.data.category || null,
       duration: parsed.data.duration,
       price: parsed.data.price ? Math.round(parsed.data.price * 100) : null,
       isActive: parsed.data.isActive,
@@ -78,8 +81,9 @@ export async function updateService(serviceId: string, formData: FormData) {
   const rawData = {
     name: formData.get("name") as string,
     description: (formData.get("description") as string) || undefined,
+    category: (formData.get("category") as string) || undefined,
     duration: formData.get("duration") as string,
-    price: formData.get("price") as string || undefined,
+    price: (formData.get("price") as string) || undefined,
     isActive: formData.get("isActive") === "true",
   };
 
@@ -95,6 +99,7 @@ export async function updateService(serviceId: string, formData: FormData) {
     data: {
       name: parsed.data.name,
       description: parsed.data.description,
+      category: parsed.data.category || null,
       duration: parsed.data.duration,
       price: parsed.data.price ? Math.round(parsed.data.price * 100) : null,
       isActive: parsed.data.isActive,

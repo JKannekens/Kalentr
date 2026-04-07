@@ -21,6 +21,8 @@ export default async function ServicesPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  const categories = Array.from(new Set(services.map((s) => s.category).filter(Boolean))) as string[];
+
   return (
     <div className="space-y-8">
       <div>
@@ -35,7 +37,7 @@ export default async function ServicesPage() {
           <ServiceList services={services} />
         </div>
         <div>
-          <ServiceForm />
+          <ServiceForm categories={categories} />
         </div>
       </div>
     </div>
