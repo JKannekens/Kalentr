@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Appointment, Service } from "@prisma/client";
+import type { Appointment, Service, TimeOff } from "@prisma/client";
 
 type AppointmentWithService = Appointment & { service: Service };
 
@@ -11,6 +11,7 @@ interface MonthCalendarProps {
   appointments: AppointmentWithService[];
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
+  timeOff: TimeOff[];
 }
 
 const APPOINTMENT_COLORS = [
@@ -31,10 +32,20 @@ function getColor(id: string) {
 const toLocalKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
+function getTimeOffForDay(year: number, month: number, day: number, timeOff: TimeOff[]): TimeOff | undefined {
+  const date = new Date(Date.UTC(year, month, day));
+  return timeOff.find((entry) => {
+    const start = new Date(entry.startDate);
+    const end = new Date(entry.endDate);
+    return date >= start && date <= end;
+  });
+}
+
 export function MonthCalendar({
   appointments,
   selectedDate,
   onDateSelect,
+  timeOff,
 }: MonthCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -153,6 +164,7 @@ export function MonthCalendar({
           const selected = isSelected(day);
           const visible = appts.slice(0, 2);
           const overflow = appts.length - visible.length;
+          const timeOffEntry = getTimeOffForDay(year, month, day, timeOff);
 
           return (
             <button
@@ -162,7 +174,9 @@ export function MonthCalendar({
               className={`flex flex-col min-h-27.5 p-2 cursor-pointer transition-colors border-r border-b border-gray-100 dark:border-gray-800 ${
                 selected
                   ? "bg-blue-50 dark:bg-blue-950/40"
-                  : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  : timeOffEntry
+                    ? "bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+                    : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
               }`}
             >
               {/* Day number */}
@@ -184,6 +198,13 @@ export function MonthCalendar({
                   </span>
                 )}
               </div>
+
+              {/* Time off indicator */}
+              {timeOffEntry && (
+                <div className="rounded px-1.5 py-0.5 text-xs leading-tight bg-amber-200/60 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 mb-0.5">
+                  <p className="font-semibold truncate">{timeOffEntry.label ?? "Time off"}</p>
+                </div>
+              )}
 
               {/* Appointment cards */}
               <div className="space-y-0.5">

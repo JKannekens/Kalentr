@@ -40,9 +40,16 @@ export function ServicesSidebar({ services }: ServicesSidebarProps) {
               key={service.id}
               className="rounded border border-gray-200 bg-gray-50 p-3 dark:bg-gray-700/50 dark:border-gray-600"
             >
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                {service.name}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {service.name}
+                </p>
+                {service.category && (
+                  <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                    {service.category}
+                  </span>
+                )}
+              </div>
               <div className="mt-1 flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                 <span>{service.duration} min</span>
                 {service.price && (

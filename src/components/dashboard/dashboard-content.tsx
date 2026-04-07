@@ -5,7 +5,7 @@ import { MonthCalendar } from "@/components/calendar/month-calendar";
 import { AppointmentsForDate } from "@/components/dashboard/appointments-for-date";
 import { ServicesSidebar } from "@/components/dashboard/services-sidebar";
 import { SettingsShortcuts } from "@/components/dashboard/settings-shortcuts";
-import type { Appointment, Service } from "@prisma/client";
+import type { Appointment, Service, TimeOff } from "@prisma/client";
 
 type AppointmentWithService = Appointment & { service: Service };
 
@@ -13,11 +13,13 @@ interface DashboardContentProps {
   appointments: AppointmentWithService[];
   services: Service[];
   timezone?: string;
+  timeOff: TimeOff[];
 }
 
 export function DashboardContent({
   appointments,
   services,
+  timeOff,
 }: DashboardContentProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -39,6 +41,7 @@ export function DashboardContent({
           appointments={sortedAppointments}
           selectedDate={selectedDate}
           onDateSelect={setSelectedDate}
+          timeOff={timeOff}
         />
         <AppointmentsForDate
           appointments={sortedAppointments}

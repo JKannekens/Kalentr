@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const [services, appointments] = await Promise.all([
+  const [services, appointments, timeOff] = await Promise.all([
     prisma.service.findMany({
       where: { tenantId: tenant.id, isActive: true },
       orderBy: { name: "asc" },
@@ -27,6 +27,10 @@ export default async function DashboardPage() {
       where: { tenantId: tenant.id },
       include: { service: true },
       orderBy: { startTime: "desc" },
+    }),
+    prisma.timeOff.findMany({
+      where: { tenantId: tenant.id },
+      orderBy: { startDate: "asc" },
     }),
   ]);
 
@@ -56,6 +60,7 @@ export default async function DashboardPage() {
         appointments={appointments}
         services={services}
         timezone={tenant.timezone}
+        timeOff={timeOff}
       />
     </div>
   );
