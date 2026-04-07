@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Appointment, Service, TimeOff } from "@prisma/client";
@@ -12,7 +12,10 @@ interface MonthCalendarProps {
   appointments: AppointmentWithService[];
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
-  onAppointmentClick?: (appointment: AppointmentWithService, anchorRect: DOMRect) => void;
+  onAppointmentClick?: (
+    appointment: AppointmentWithService,
+    anchorRect: DOMRect,
+  ) => void;
   timeOff: TimeOff[];
 }
 
@@ -72,7 +75,10 @@ function formatHour(h: number): string {
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -90,7 +96,10 @@ interface DayCellProps {
   isToday: boolean;
   isSelected: boolean;
   onSelect: () => void;
-  onAppointmentClick?: (appointment: AppointmentWithService, anchorRect: DOMRect) => void;
+  onAppointmentClick?: (
+    appointment: AppointmentWithService,
+    anchorRect: DOMRect,
+  ) => void;
 }
 
 function DayCell({
@@ -153,7 +162,9 @@ function DayCell({
 
       {timeOffEntry && (
         <div className="rounded px-1.5 py-0.5 text-xs leading-tight bg-amber-200/60 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 mb-0.5">
-          <p className="font-semibold truncate">{timeOffEntry.label ?? "Time off"}</p>
+          <p className="font-semibold truncate">
+            {timeOffEntry.label ?? "Time off"}
+          </p>
         </div>
       )}
 
@@ -162,11 +173,19 @@ function DayCell({
           <button
             key={app.id}
             type="button"
-            onClick={(e) => { e.stopPropagation(); onAppointmentClick?.(app, e.currentTarget.getBoundingClientRect()); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAppointmentClick?.(
+                app,
+                e.currentTarget.getBoundingClientRect(),
+              );
+            }}
             className={`w-full rounded px-1.5 py-0.5 text-xs leading-tight text-left ${getColor(app.serviceId)} ${onAppointmentClick ? "hover:brightness-95 cursor-pointer" : ""}`}
           >
             <p className="font-semibold truncate">{app.service.name}</p>
-            {!compact && <p className="truncate opacity-75">{app.clientName}</p>}
+            {!compact && (
+              <p className="truncate opacity-75">{app.clientName}</p>
+            )}
           </button>
         ))}
       </div>
@@ -219,7 +238,9 @@ export function MonthCalendar({
 
   function isToday(year: number, month: number, day: number) {
     const t = new Date();
-    return day === t.getDate() && month === t.getMonth() && year === t.getFullYear();
+    return (
+      day === t.getDate() && month === t.getMonth() && year === t.getFullYear()
+    );
   }
 
   function isSelected(year: number, month: number, day: number) {
@@ -247,7 +268,10 @@ export function MonthCalendar({
     const endStr =
       ws.getMonth() === we.getMonth()
         ? String(we.getDate())
-        : new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(we);
+        : new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "numeric",
+          }).format(we);
     title = `${startStr} – ${endStr}, ${we.getFullYear()}`;
   } else {
     title = new Intl.DateTimeFormat("en-US", {
@@ -293,7 +317,10 @@ export function MonthCalendar({
     currentDate.getDate(),
     timeOff,
   );
-  const hours = Array.from({ length: DAY_END - DAY_START }, (_, i) => DAY_START + i);
+  const hours = Array.from(
+    { length: DAY_END - DAY_START },
+    (_, i) => DAY_START + i,
+  );
 
   return (
     <div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 overflow-hidden">
@@ -445,14 +472,14 @@ export function MonthCalendar({
             })}
           </div>
           {/* Hourly grid */}
-          <div className="overflow-y-auto max-h-[520px]">
+          <div className="overflow-y-auto max-h-130">
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="flex min-h-[56px] border-b border-gray-100 dark:border-gray-800 last:border-b-0"
+                className="flex min-h-14 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
               >
                 <div className="w-16 shrink-0 px-2 pt-2.5 text-xs text-gray-400 dark:text-gray-500 leading-tight">
-                  <span>{(hour % 12) || 12}:00</span>
+                  <span>{hour % 12 || 12}:00</span>
                   <br />
                   <span>{hour >= 12 ? "PM" : "AM"}</span>
                 </div>
@@ -470,10 +497,17 @@ export function MonthCalendar({
                         <button
                           key={app.id}
                           type="button"
-                          onClick={(e) => onAppointmentClick?.(app, e.currentTarget.getBoundingClientRect())}
+                          onClick={(e) =>
+                            onAppointmentClick?.(
+                              app,
+                              e.currentTarget.getBoundingClientRect(),
+                            )
+                          }
                           className={`w-full rounded px-1.5 py-0.5 text-xs text-left ${getColor(app.serviceId)} ${onAppointmentClick ? "hover:brightness-95 cursor-pointer" : ""}`}
                         >
-                          <p className="font-semibold truncate">{app.service.name}</p>
+                          <p className="font-semibold truncate">
+                            {app.service.name}
+                          </p>
                           <p className="opacity-75 truncate">
                             {formatTime(new Date(app.startTime))}
                           </p>
@@ -496,7 +530,7 @@ export function MonthCalendar({
               Time off{dayTimeOff.label ? `: ${dayTimeOff.label}` : ""}
             </div>
           )}
-          <div className="overflow-y-auto max-h-[520px]">
+          <div className="overflow-y-auto max-h-130">
             {hours.map((hour) => {
               const slotAppts = dayAppts.filter(
                 (app) => new Date(app.startTime).getHours() === hour,
@@ -504,7 +538,7 @@ export function MonthCalendar({
               return (
                 <div
                   key={hour}
-                  className="flex min-h-[56px] border-b border-gray-100 dark:border-gray-800 last:border-b-0"
+                  className="flex min-h-14 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
                 >
                   <div className="w-20 shrink-0 px-3 pt-2.5 text-xs text-gray-400 dark:text-gray-500">
                     {formatHour(hour)}
@@ -514,7 +548,12 @@ export function MonthCalendar({
                       <button
                         key={app.id}
                         type="button"
-                        onClick={(e) => onAppointmentClick?.(app, e.currentTarget.getBoundingClientRect())}
+                        onClick={(e) =>
+                          onAppointmentClick?.(
+                            app,
+                            e.currentTarget.getBoundingClientRect(),
+                          )
+                        }
                         className={`w-full rounded px-2 py-1 text-xs text-left ${getColor(app.serviceId)} ${onAppointmentClick ? "hover:brightness-95 cursor-pointer" : ""}`}
                       >
                         <p className="font-semibold">{app.service.name}</p>

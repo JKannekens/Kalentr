@@ -1,7 +1,12 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, AppointmentStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { Pool } from "pg";
 
-const prisma = new PrismaClient();
+const connectionString = `${process.env.DATABASE_URL}`;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("Seeding database...");
@@ -113,8 +118,8 @@ async function main() {
           endTime: "17:00",
           isActive: true,
         },
-      })
-    )
+      }),
+    ),
   );
 
   // Time off: a week's holiday in the near future
@@ -267,12 +272,15 @@ async function main() {
           endTime: end,
           status: appt.status,
           notes: appt.notes,
-          reminderSent: appt.status === "COMPLETED" || appt.status === "CONFIRMED",
+          reminderSent:
+            appt.status === "COMPLETED" || appt.status === "CONFIRMED",
           cancelledAt:
-            appt.status === "CANCELLED" ? new Date(start.getTime() - 86400000) : undefined,
+            appt.status === "CANCELLED"
+              ? new Date(start.getTime() - 86400000)
+              : undefined,
         },
       });
-    })
+    }),
   );
 
   console.log("Seed complete.");
@@ -281,8 +289,13 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
+  .then(async () => {
+    await prisma.$disconnect();
+    await pool.end();
   })
-  .finally(() => prisma.$disconnect());
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    await pool.end();
+    process.exit(1);
+  });
