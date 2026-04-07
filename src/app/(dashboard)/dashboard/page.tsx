@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       orderBy: { name: "asc" },
     }),
     prisma.appointment.findMany({
-      where: { tenantId: tenant.id },
+      where: { tenantId: tenant.id, status: { not: "CANCELLED" } },
       include: { service: true },
       orderBy: { startTime: "desc" },
     }),

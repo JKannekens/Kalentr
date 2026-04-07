@@ -146,14 +146,25 @@ function AppointmentCard({
               </Button>
             )}
             {appointment.status === "CONFIRMED" && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleStatusChange("COMPLETED")}
-                disabled={loading}
-              >
-                Complete
-              </Button>
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleStatusChange("COMPLETED")}
+                  disabled={loading}
+                >
+                  Complete
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleStatusChange("NO_SHOW")}
+                  disabled={loading}
+                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                >
+                  No show
+                </Button>
+              </>
             )}
             <Button
               size="sm"

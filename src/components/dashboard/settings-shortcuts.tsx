@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, Settings, Globe } from "lucide-react";
+import { CalendarDays, Clock, Settings, Globe } from "lucide-react";
 
 export function SettingsShortcuts() {
   const shortcuts = [
+    {
+      icon: CalendarDays,
+      label: "Appointments",
+      description: "Manage & confirm",
+      href: "/dashboard/appointments",
+    },
     {
       icon: Clock,
       label: "Availability",
