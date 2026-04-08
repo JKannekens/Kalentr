@@ -55,9 +55,11 @@ function DayCell({
   const overflow = appointments.length - visible.length;
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onSelect}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(); }}
       className={`flex flex-col ${minH} p-2 cursor-pointer transition-colors border-r border-b border-gray-100 dark:border-gray-800 text-left w-full ${
         isSelected
           ? "bg-blue-50 dark:bg-blue-950/40"
@@ -111,7 +113,7 @@ function DayCell({
           </button>
         ))}
       </div>
-    </button>
+    </div>
   );
 }
 
