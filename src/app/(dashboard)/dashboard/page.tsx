@@ -49,7 +49,7 @@ export default async function DashboardPage() {
             href={microSiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
+            className="text-emerald-600 hover:underline"
           >
             {microSiteUrl}
           </a>

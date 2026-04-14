@@ -75,9 +75,9 @@ export function WeekView({
                 onClick={() => onSelectDay(date)}
                 className={`mx-auto mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold cursor-pointer ${
                   todayCell
-                    ? "bg-blue-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : isSelected(y, m, d)
-                      ? "text-blue-600 dark:text-blue-400"
+                      ? "text-emerald-600 dark:text-emerald-400"
                       : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >

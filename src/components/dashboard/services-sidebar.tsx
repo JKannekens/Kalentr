@@ -45,7 +45,7 @@ export function ServicesSidebar({ services }: ServicesSidebarProps) {
                   {service.name}
                 </p>
                 {service.category && (
-                  <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                     {service.category}
                   </span>
                 )}

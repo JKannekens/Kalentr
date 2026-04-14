@@ -6,7 +6,8 @@
       "Bash(pnpm dlx:*)",
       "Bash(npm run:*)",
       "Bash(npx shadcn@latest add dialog --yes)",
-      "Bash(npx shadcn@latest add dialog --overwrite)"
+      "Bash(npx shadcn@latest add dialog --overwrite)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

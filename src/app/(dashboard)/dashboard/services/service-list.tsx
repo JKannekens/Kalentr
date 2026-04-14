@@ -28,7 +28,7 @@ export function ServiceList({ services }: { services: Service[] }) {
             onClick={() => setActiveCategory(null)}
             className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
               activeCategory === null
-                ? "bg-blue-600 text-white"
+                ? "bg-emerald-600 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             }`}
           >
@@ -41,7 +41,7 @@ export function ServiceList({ services }: { services: Service[] }) {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                 activeCategory === cat
-                  ? "bg-blue-600 text-white"
+                  ? "bg-emerald-600 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
               }`}
             >
@@ -118,7 +118,7 @@ function ServiceCard({ service }: { service: Service }) {
               type="text"
               required
               defaultValue={service.name}
-              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
 
@@ -128,7 +128,7 @@ function ServiceCard({ service }: { service: Service }) {
               name="description"
               rows={2}
               defaultValue={service.description || ""}
-              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
 
@@ -139,7 +139,7 @@ function ServiceCard({ service }: { service: Service }) {
               type="text"
               defaultValue={service.category || ""}
               placeholder="e.g. Consultation, Treatment, Workshop"
-              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
 
@@ -153,7 +153,7 @@ function ServiceCard({ service }: { service: Service }) {
                 min={5}
                 step={5}
                 defaultValue={service.duration}
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
             <div>
@@ -164,7 +164,7 @@ function ServiceCard({ service }: { service: Service }) {
                 min={0}
                 step={0.01}
                 defaultValue={service.price ? service.price / 100 : ""}
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
           </div>
@@ -195,7 +195,7 @@ function ServiceCard({ service }: { service: Service }) {
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-semibold">{service.name}</h3>
             {service.category && (
-              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+              <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                 {service.category}
               </span>
             )}

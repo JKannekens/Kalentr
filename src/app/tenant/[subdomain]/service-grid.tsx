@@ -19,7 +19,7 @@ export function ServiceGrid({ services }: { services: Service[] }) {
             onClick={() => setActiveCategory(null)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               activeCategory === null
-                ? "bg-blue-600 text-white"
+                ? "bg-emerald-600 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             }`}
           >
@@ -32,7 +32,7 @@ export function ServiceGrid({ services }: { services: Service[] }) {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 activeCategory === cat
-                  ? "bg-blue-600 text-white"
+                  ? "bg-emerald-600 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
               }`}
             >
@@ -52,7 +52,7 @@ export function ServiceGrid({ services }: { services: Service[] }) {
             <div className="flex items-start justify-between gap-2">
               <h3 className="text-lg font-semibold">{service.name}</h3>
               {service.category && (
-                <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                   {service.category}
                 </span>
               )}

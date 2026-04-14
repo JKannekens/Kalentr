@@ -110,7 +110,7 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
                   onChange={(e) =>
                     updateDay(day.dayOfWeek, { isActive: e.target.checked })
                   }
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 <span className="font-medium">{DAYS[day.dayOfWeek]}</span>
               </label>

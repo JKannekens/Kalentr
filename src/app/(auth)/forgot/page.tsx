@@ -63,7 +63,7 @@ export default function ForgotPage() {
               name="email"
               type="email"
               required
-              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
 
@@ -77,7 +77,7 @@ export default function ForgotPage() {
         Remembered your password?{" "}
         <Link
           href="/login"
-          className="font-medium text-blue-600 hover:underline"
+          className="font-medium text-emerald-600 hover:underline"
         >
           Sign in
         </Link>

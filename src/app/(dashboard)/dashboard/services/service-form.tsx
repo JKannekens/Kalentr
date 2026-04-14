@@ -24,7 +24,7 @@ function CategoryInput({ categories }: { categories: string[] }) {
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 100)}
         placeholder="e.g. Consultation, Treatment, Workshop"
-        className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+        className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
       />
       {open && suggestions.length > 0 && (
         <ul className="absolute z-10 mt-1 w-full rounded-md border bg-white shadow-md dark:bg-gray-700 dark:border-gray-600">
@@ -99,7 +99,7 @@ export function ServiceForm({ categories = [] }: { categories?: string[] }) {
             type="text"
             required
             placeholder="e.g. 30-Minute Consultation"
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
           />
         </div>
 
@@ -112,7 +112,7 @@ export function ServiceForm({ categories = [] }: { categories?: string[] }) {
             name="description"
             rows={2}
             placeholder="What does this service include?"
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
           />
         </div>
 
@@ -135,7 +135,7 @@ export function ServiceForm({ categories = [] }: { categories?: string[] }) {
             min={5}
             step={5}
             defaultValue={30}
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
           />
         </div>
 
@@ -152,7 +152,7 @@ export function ServiceForm({ categories = [] }: { categories?: string[] }) {
               min={0}
               step={0.01}
               placeholder="0.00"
-              className="block w-full rounded-md border pl-7 pr-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="block w-full rounded-md border pl-7 pr-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
           <p className="mt-1 text-xs text-gray-500">

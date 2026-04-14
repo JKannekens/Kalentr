@@ -204,11 +204,11 @@ export function BookingForm({
                   disabled={!isAvailable}
                   onClick={() => isAvailable && handleDateSelect(date)}
                   className={`min-h-12 p-2 border-r border-b border-gray-100 dark:border-gray-800 flex items-start transition-colors
-                    ${isSelected ? "bg-blue-50 dark:bg-blue-950/40" : isAvailable ? "hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer" : "cursor-not-allowed"}
+                    ${isSelected ? "bg-emerald-50 dark:bg-emerald-950/40" : isAvailable ? "hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer" : "cursor-not-allowed"}
                   `}
                 >
                   <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium
-                    ${isToday ? "bg-blue-600 text-white" : isSelected ? "text-blue-600 dark:text-blue-400 font-semibold" : isAvailable ? "text-gray-700 dark:text-gray-300" : "text-gray-300 dark:text-gray-700"}
+                    ${isToday ? "bg-emerald-600 text-white" : isSelected ? "text-emerald-600 dark:text-emerald-400 font-semibold" : isAvailable ? "text-gray-700 dark:text-gray-300" : "text-gray-300 dark:text-gray-700"}
                   `}>
                     {cell.day}
                   </span>
@@ -246,7 +246,7 @@ export function BookingForm({
                 <button
                   key={time}
                   onClick={() => handleTimeSelect(time)}
-                  className="rounded-md border px-3 py-2 text-sm hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  className="rounded-md border px-3 py-2 text-sm hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
                 >
                   {time}
                 </button>
@@ -288,7 +288,7 @@ export function BookingForm({
                 name="clientName"
                 type="text"
                 required
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -301,7 +301,7 @@ export function BookingForm({
                 name="clientEmail"
                 type="email"
                 required
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -313,7 +313,7 @@ export function BookingForm({
                 id="clientPhone"
                 name="clientPhone"
                 type="tel"
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -325,7 +325,7 @@ export function BookingForm({
                 id="notes"
                 name="notes"
                 rows={3}
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 

@@ -88,7 +88,7 @@ export default function OnboardingPage() {
               type="text"
               required
               placeholder="Acme Consulting"
-              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
 
@@ -105,7 +105,7 @@ export default function OnboardingPage() {
                 placeholder="acme"
                 value={subdomain}
                 onChange={(e) => setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                className="block w-full rounded-l-md border px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                className="block w-full rounded-l-md border px-3 py-2 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
               <span className="inline-flex items-center rounded-r-md border border-l-0 bg-gray-50 px-3 text-sm text-gray-500 dark:bg-gray-600 dark:border-gray-600">
                 .{rootDomain}
@@ -135,7 +135,7 @@ export default function OnboardingPage() {
               name="description"
               rows={3}
               placeholder="Tell clients about your business..."
-              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
 
@@ -147,7 +147,7 @@ export default function OnboardingPage() {
               id="timezone"
               name="timezone"
               defaultValue="America/New_York"
-              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+              className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
             >
               <option value="America/New_York">Eastern Time (ET)</option>
               <option value="America/Chicago">Central Time (CT)</option>

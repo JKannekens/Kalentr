@@ -62,7 +62,7 @@ function DayCell({
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(); }}
       className={`flex flex-col ${minH} p-2 cursor-pointer transition-colors border-r border-b border-gray-100 dark:border-gray-800 text-left w-full ${
         isSelected
-          ? "bg-blue-50 dark:bg-blue-950/40"
+          ? "bg-emerald-50 dark:bg-emerald-950/40"
           : timeOffEntry
             ? "bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30"
             : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
@@ -72,9 +72,9 @@ function DayCell({
         <span
           className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-sm font-medium ${
             isToday
-              ? "bg-blue-600 text-white"
+              ? "bg-emerald-600 text-white"
               : isSelected
-                ? "text-blue-600 dark:text-blue-400 font-semibold"
+                ? "text-emerald-600 dark:text-emerald-400 font-semibold"
                 : "text-gray-700 dark:text-gray-300"
           }`}
         >

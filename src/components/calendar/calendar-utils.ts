@@ -4,7 +4,7 @@ export type AppointmentWithService = Appointment & { service: Service };
 export type CalendarView = "month" | "week" | "day";
 
 export const APPOINTMENT_COLORS = [
-  "bg-blue-500/20 text-blue-900 dark:bg-blue-500/30 dark:text-blue-100",
+  "bg-emerald-500/20 text-emerald-900 dark:bg-emerald-500/30 dark:text-emerald-100",
   "bg-orange-400/20 text-orange-900 dark:bg-orange-400/30 dark:text-orange-100",
   "bg-violet-500/20 text-violet-900 dark:bg-violet-500/30 dark:text-violet-100",
   "bg-emerald-500/20 text-emerald-900 dark:bg-emerald-500/30 dark:text-emerald-100",
