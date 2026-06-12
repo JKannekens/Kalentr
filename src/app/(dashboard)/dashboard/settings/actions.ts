@@ -76,3 +76,38 @@ export async function updateAccount(formData: FormData) {
   revalidatePath("/dashboard/settings");
   return { success: true };
 }
+
+export async function updateCustomDomain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "Not authenticated" };
+
+  const tenant = await getTenantByOwner(session.user.id);
+  if (!tenant) return { success: false, error: "No business found" };
+
+  const raw = (formData.get("customDomain") as string)?.trim().toLowerCase() || "";
+  const customDomain = raw || null;
+
+  if (customDomain) {
+    // Basic domain format validation (no protocol, no path, no port)
+    const domainRegex = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/;
+    if (!domainRegex.test(customDomain)) {
+      return { success: false, error: "Enter a valid domain, e.g. bookings.yourdomain.com" };
+    }
+
+    // Check not already taken by another tenant
+    const existing = await prisma.tenant.findFirst({
+      where: { customDomain, NOT: { id: tenant.id } },
+    });
+    if (existing) {
+      return { success: false, error: "This domain is already in use" };
+    }
+  }
+
+  await prisma.tenant.update({
+    where: { id: tenant.id },
+    data: { customDomain },
+  });
+
+  revalidatePath("/dashboard/settings");
+  return { success: true };
+}

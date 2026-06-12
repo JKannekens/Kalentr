@@ -8,6 +8,7 @@ import {
   Briefcase,
   Clock,
   Settings,
+  CreditCard,
 } from "lucide-react";
 
 const navItems = [
@@ -16,6 +17,7 @@ const navItems = [
   { href: "/dashboard/services", label: "Services", icon: Briefcase },
   { href: "/dashboard/availability", label: "Availability", icon: Clock },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
 ];
 
 export function DashboardNav() {

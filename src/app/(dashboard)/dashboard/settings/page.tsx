@@ -8,7 +8,22 @@ export default async function SettingsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const tenant = await getTenantByOwner(session.user.id);
+  const tenantBase = await getTenantByOwner(session.user.id);
+  if (!tenantBase) redirect("/onboarding");
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantBase.id },
+    select: {
+      id: true,
+      businessName: true,
+      description: true,
+      logo: true,
+      primaryColor: true,
+      subdomain: true,
+      timezone: true,
+      customDomain: true,
+    },
+  });
   if (!tenant) redirect("/onboarding");
 
   const bookingConfig = await prisma.bookingConfig.findUnique({

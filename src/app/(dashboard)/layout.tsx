@@ -2,6 +2,9 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/ui/LogoutButton";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { UpgradeWall } from "@/components/dashboard/upgrade-wall";
+import { prisma } from "@/lib/prisma";
+import { isSubscriptionActive } from "@/lib/stripe";
 import Link from "next/link";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -10,6 +13,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session?.user) {
     redirect("/login");
   }
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { ownerId: session.user.id },
+    select: { subscriptionStatus: true, trialEndsAt: true },
+  });
+
+  const active = tenant ? isSubscriptionActive(tenant.subscriptionStatus, tenant.trialEndsAt) : true;
+
+  const daysLeft = tenant?.trialEndsAt
+    ? Math.max(0, Math.ceil((tenant.trialEndsAt.getTime() - Date.now()) / 86_400_000))
+    : undefined;
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,6 +43,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <DashboardNav />
             </div>
             <div className="flex items-center gap-3">
+              {tenant?.subscriptionStatus === "trialing" && daysLeft !== undefined && daysLeft <= 5 && daysLeft > 0 && (
+                <Link
+                  href="/dashboard/billing"
+                  className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+                >
+                  {daysLeft}d left in trial
+                </Link>
+              )}
               <span className="hidden lg:inline text-sm text-muted-foreground truncate max-w-48">
                 {session.user.email}
               </span>
@@ -40,6 +62,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {children}
       </main>
+      {!active && <UpgradeWall daysLeft={daysLeft} />}
     </div>
   );
 }
