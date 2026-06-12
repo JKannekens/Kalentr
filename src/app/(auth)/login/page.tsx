@@ -21,19 +21,14 @@ export default function LoginPage() {
     const password = formData.get("password") as string;
 
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
+      const result = await signIn("credentials", { email, password, redirect: false });
 
       if (result?.error) {
-        if (result.code === "not_verified") {
-          setError("Please verify your email before logging in.");
-          return;
-        }
-
-        setError("Invalid email or password");
+        setError(
+          result.code === "not_verified"
+            ? "Please verify your email before logging in."
+            : "Invalid email or password."
+        );
       } else {
         router.push("/dashboard");
         router.refresh();
@@ -46,70 +41,51 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="rounded-lg border bg-white p-8 shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold">Welcome back</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Sign in to your account
-        </p>
+    <div className="rounded-2xl border bg-white shadow-sm dark:bg-gray-900 dark:border-gray-800">
+      <div className="px-8 pt-8 pb-6 border-b dark:border-gray-800">
+        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Sign in to your account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="px-8 py-6 space-y-4">
         {error && (
-          <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-400">
             {error}
           </div>
         )}
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email
-          </label>
+        <div className="space-y-1.5">
+          <label htmlFor="email" className="block text-sm font-medium">Email</label>
           <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+            id="email" name="email" type="email" required autoComplete="email"
+            className="block w-full rounded-lg border bg-white px-3 py-2.5 text-sm shadow-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:bg-gray-800 dark:border-gray-700"
           />
         </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password
-          </label>
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="block text-sm font-medium">Password</label>
+            <Link href="/forgot" className="text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">
+              Forgot password?
+            </Link>
+          </div>
           <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+            id="password" name="password" type="password" required autoComplete="current-password"
+            className="block w-full rounded-lg border bg-white px-3 py-2.5 text-sm shadow-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:bg-gray-800 dark:border-gray-700"
           />
         </div>
 
-        <div className="text-right">
-          <Link
-            href="/forgot"
-            className="text-sm text-emerald-600 hover:underline"
-          >
-            Forgot password?
-          </Link>
-        </div>
-
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Signing in..." : "Sign in"}
+        <Button type="submit" className="w-full mt-2" size="lg" disabled={loading}>
+          {loading ? "Signing in…" : "Sign in"}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+      <div className="px-8 pb-8 text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link
-          href="/register"
-          className="font-medium text-emerald-600 hover:underline"
-        >
-          Sign up
+        <Link href="/register" className="font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">
+          Sign up free
         </Link>
-      </p>
+      </div>
     </div>
   );
 }

@@ -74,10 +74,7 @@ export function ServiceForm({ categories = [] }: { categories?: string[] }) {
   }
 
   return (
-    <div className="rounded-lg border bg-white p-6 dark:bg-gray-800 dark:border-gray-700">
-      <h2 className="text-lg font-semibold mb-4">Add Service</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
             {error}
@@ -161,9 +158,8 @@ export function ServiceForm({ categories = [] }: { categories?: string[] }) {
         </div>
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Creating..." : "Add Service"}
+          {loading ? "Creating…" : "Add service"}
         </Button>
       </form>
-    </div>
   );
 }

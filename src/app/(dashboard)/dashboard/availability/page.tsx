@@ -2,8 +2,6 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getTenantByOwner } from "@/lib/tenant";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import type { Availability, TimeOff } from "@prisma/client";
 import { AvailabilityForm } from "./availability-form";
 import { TimeOffForm } from "./time-off-form";
@@ -38,22 +36,15 @@ export default async function AvailabilityPage() {
   return (
     <div className="space-y-8">
       <div>
-        <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mb-2">
-          <ChevronLeft className="h-4 w-4" /> Dashboard
-        </Link>
-        <h1 className="text-3xl font-bold">Availability</h1>
-        <p className="mt-1 text-gray-600 dark:text-gray-400">
-          Set your weekly schedule for when clients can book
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight">Availability</h1>
+        <p className="mt-0.5 text-sm text-muted-foreground">Set your weekly schedule for when clients can book</p>
       </div>
 
       <AvailabilityForm initialAvailability={availabilityMap} />
 
       <div>
-        <h2 className="text-xl font-semibold mb-1">Time Off & Holidays</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Block specific dates when you&apos;re unavailable
-        </p>
+        <h2 className="text-lg font-semibold mb-0.5">Time off & holidays</h2>
+        <p className="text-sm text-muted-foreground mb-4">Block specific dates when you&apos;re unavailable</p>
         <TimeOffForm initialTimeOff={timeOff} />
       </div>
     </div>
