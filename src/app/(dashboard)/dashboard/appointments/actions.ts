@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { getTenantByOwner } from "@/lib/tenant";
 import { revalidatePath } from "next/cache";
 import { AppointmentStatus } from "@prisma/client";
+import { sendEmail } from "@/lib/email";
+import { appointmentStatusChangeEmail } from "@/lib/email-templates";
 
 export async function updateAppointmentStatus(
   appointmentId: string,
@@ -20,9 +22,9 @@ export async function updateAppointmentStatus(
     return { success: false, error: "No business found" };
   }
 
-  // Verify ownership
   const appointment = await prisma.appointment.findFirst({
     where: { id: appointmentId, tenantId: tenant.id },
+    include: { service: true },
   });
 
   if (!appointment) {
@@ -37,7 +39,36 @@ export async function updateAppointmentStatus(
     },
   });
 
-  // TODO: Send email notification on status change
+  if (status === "CONFIRMED" || status === "CANCELLED") {
+    const date = appointment.startTime.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    const time = appointment.startTime.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    sendEmail({
+      to: appointment.clientEmail,
+      subject:
+        status === "CONFIRMED"
+          ? `Appointment Confirmed - ${appointment.service.name} at ${tenant.businessName}`
+          : `Appointment Cancelled - ${appointment.service.name} at ${tenant.businessName}`,
+      html: appointmentStatusChangeEmail({
+        businessName: tenant.businessName,
+        primaryColor: tenant.primaryColor,
+        clientName: appointment.clientName,
+        serviceName: appointment.service.name,
+        date,
+        time,
+        status,
+      }),
+    }).catch(console.error);
+  }
 
   revalidatePath("/dashboard/appointments");
   return { success: true };

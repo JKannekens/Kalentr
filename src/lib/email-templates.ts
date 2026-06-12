@@ -346,6 +346,72 @@ export function emailVerificationEmail({
 }
 
 // ============================================
+// APPOINTMENT STATUS CHANGE (Client)
+// ============================================
+
+interface AppointmentStatusChangeProps extends BaseTemplateProps {
+  clientName: string;
+  serviceName: string;
+  date: string;
+  time: string;
+  status: "CONFIRMED" | "CANCELLED";
+}
+
+export function appointmentStatusChangeEmail({
+  businessName,
+  primaryColor,
+  clientName,
+  serviceName,
+  date,
+  time,
+  status,
+}: AppointmentStatusChangeProps): string {
+  const isConfirmed = status === "CONFIRMED";
+  const heading = isConfirmed ? "Appointment Confirmed" : "Appointment Cancelled";
+  const message = isConfirmed
+    ? `Hi ${clientName}, your appointment has been confirmed by ${businessName}.`
+    : `Hi ${clientName}, your appointment with ${businessName} has been cancelled.`;
+
+  const content = `
+    <h2 style="margin: 0 0 16px; color: #111827; font-size: 20px;">${heading}</h2>
+    <p style="margin: 0 0 24px; color: #4b5563; font-size: 16px; line-height: 1.5;">
+      ${message}
+    </p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+      <tr>
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding: 8px 0;">
+                <span style="color: #6b7280; font-size: 14px;">Service</span><br>
+                <span style="color: #111827; font-size: 16px; font-weight: 500;">${serviceName}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0;">
+                <span style="color: #6b7280; font-size: 14px;">Date</span><br>
+                <span style="color: #111827; font-size: 16px; font-weight: 500;">${date}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0;">
+                <span style="color: #6b7280; font-size: 14px;">Time</span><br>
+                <span style="color: #111827; font-size: 16px; font-weight: 500;">${time}</span>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    ${isConfirmed ? "" : `<p style="margin: 0; color: #6b7280; font-size: 14px;">If you have any questions, please contact ${businessName} directly.</p>`}
+  `;
+
+  return baseTemplate(content, { businessName, primaryColor });
+}
+
+// ============================================
 // PASSWORD RESET
 // ============================================
 

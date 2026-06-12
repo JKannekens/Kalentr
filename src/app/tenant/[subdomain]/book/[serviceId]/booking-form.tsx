@@ -223,14 +223,17 @@ export function BookingForm({
       {step === "time" && selectedDate && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">
-              Available Times for{" "}
-              {selectedDate.toLocaleDateString("en-US", {
-                weekday: "long",
-                month: "short",
-                day: "numeric",
-              })}
-            </h3>
+            <div>
+              <h3 className="text-lg font-medium">
+                Available Times for{" "}
+                {selectedDate.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">{tenant.timezone}</p>
+            </div>
             <Button variant="ghost" size="sm" onClick={() => setStep("date")}>
               Change Date
             </Button>

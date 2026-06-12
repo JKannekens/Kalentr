@@ -116,7 +116,8 @@ export async function isSubdomainAvailable(subdomain: string): Promise<boolean> 
  * Validate subdomain format
  */
 export function isValidSubdomain(subdomain: string): boolean {
-  // 3-63 characters, alphanumeric and hyphens, can't start/end with hyphen
-  const regex = /^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/;
-  return regex.test(subdomain.toLowerCase());
+  // 3-63 characters, lowercase alphanumeric and hyphens, can't start/end with hyphen
+  if (/[A-Z]/.test(subdomain)) return false;
+  const regex = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/;
+  return regex.test(subdomain);
 }

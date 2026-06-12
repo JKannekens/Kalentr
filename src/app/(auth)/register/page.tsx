@@ -16,15 +16,11 @@ export default function RegisterPage() {
     setError(null);
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    
     try {
-      const result = await register(formData);
-
+      const result = await register(new FormData(e.currentTarget));
       if (!result.success) {
         setError(result.error || "Registration failed");
       } else {
-        // Redirect to login after successful registration
         router.push("/login?registered=true");
       }
     } catch {
@@ -35,75 +31,56 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="rounded-lg border bg-white p-8 shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold">Create your account</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Start accepting bookings in minutes
-        </p>
+    <div className="rounded-2xl border bg-white shadow-sm dark:bg-gray-900 dark:border-gray-800">
+      <div className="px-8 pt-8 pb-6 border-b dark:border-gray-800">
+        <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Start accepting bookings in minutes</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="px-8 py-6 space-y-4">
         {error && (
-          <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-400">
             {error}
           </div>
         )}
 
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium">
-            Name
-          </label>
+        <div className="space-y-1.5">
+          <label htmlFor="name" className="block text-sm font-medium">Full name</label>
           <input
-            id="name"
-            name="name"
-            type="text"
-            required
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+            id="name" name="name" type="text" required autoComplete="name"
+            className="block w-full rounded-lg border bg-white px-3 py-2.5 text-sm shadow-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:bg-gray-800 dark:border-gray-700"
           />
         </div>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email
-          </label>
+        <div className="space-y-1.5">
+          <label htmlFor="email" className="block text-sm font-medium">Email</label>
           <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+            id="email" name="email" type="email" required autoComplete="email"
+            className="block w-full rounded-lg border bg-white px-3 py-2.5 text-sm shadow-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:bg-gray-800 dark:border-gray-700"
           />
         </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password
-          </label>
+        <div className="space-y-1.5">
+          <label htmlFor="password" className="block text-sm font-medium">Password</label>
           <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            minLength={8}
-            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+            id="password" name="password" type="password" required minLength={8}
+            autoComplete="new-password"
+            className="block w-full rounded-lg border bg-white px-3 py-2.5 text-sm shadow-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:bg-gray-800 dark:border-gray-700"
           />
-          <p className="mt-1 text-xs text-gray-500">
-            At least 8 characters with letters and numbers
-          </p>
+          <p className="text-xs text-muted-foreground">At least 8 characters with a number</p>
         </div>
 
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Creating account..." : "Create account"}
+        <Button type="submit" className="w-full mt-2" size="lg" disabled={loading}>
+          {loading ? "Creating account…" : "Create account"}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+      <div className="px-8 pb-8 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-emerald-600 hover:underline">
+        <Link href="/login" className="font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">
           Sign in
         </Link>
-      </p>
+      </div>
     </div>
   );
 }
