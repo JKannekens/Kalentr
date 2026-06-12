@@ -44,8 +44,9 @@ interface Props {
   hasStripeCustomer: boolean;
 }
 
-export function BillingClient({ status, daysLeft, isActive }: Props) {
+export function BillingClient({ status, daysLeft, isActive, hasStripeCustomer }: Props) {
   const [loading, setLoading] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   async function handleUpgrade() {
     setLoading(true);
@@ -55,6 +56,17 @@ export function BillingClient({ status, daysLeft, isActive }: Props) {
       if (data.url) window.location.href = data.url;
     } catch {
       setLoading(false);
+    }
+  }
+
+  async function handlePortal() {
+    setPortalLoading(true);
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      setPortalLoading(false);
     }
   }
 
@@ -118,11 +130,14 @@ export function BillingClient({ status, daysLeft, isActive }: Props) {
             </Button>
           )}
 
-          {isActive && status === "active" && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CreditCard className="h-4 w-4" />
-              To cancel or update your payment method, contact support.
-            </div>
+          {isActive && status === "active" && hasStripeCustomer && (
+            <Button variant="outline" size="sm" onClick={handlePortal} disabled={portalLoading}>
+              {portalLoading ? (
+                <><Loader2 className="h-4 w-4 animate-spin mr-2" />Redirecting…</>
+              ) : (
+                <><CreditCard className="h-4 w-4 mr-2" />Manage subscription</>
+              )}
+            </Button>
           )}
         </div>
       </div>
