@@ -6,6 +6,7 @@ import {
   bookingConfirmationEmail,
   newBookingNotificationEmail,
 } from "@/lib/email-templates";
+import { generateSlots } from "@/lib/generate-slots";
 import { z } from "zod";
 
 const BookingSchema = z.object({
@@ -72,54 +73,14 @@ export async function getAvailableSlots(
     },
   });
 
-  // Generate slots
-  const slots: string[] = [];
-  const now = new Date();
-
-  for (const avail of availability) {
-    const [startHour, startMin] = avail.startTime.split(":").map(Number);
-    const [endHour, endMin] = avail.endTime.split(":").map(Number);
-
-    let current = startHour * 60 + startMin;
-    const end = endHour * 60 + endMin;
-
-    while (current + service.duration <= end) {
-      const slotStart = new Date(date);
-      slotStart.setHours(Math.floor(current / 60), current % 60, 0, 0);
-
-      const slotEnd = new Date(slotStart);
-      slotEnd.setMinutes(slotEnd.getMinutes() + service.duration);
-
-      // Check if slot is in the past
-      if (slotStart <= now) {
-        current += slotDuration;
-        continue;
-      }
-
-      // Check for conflicts with existing appointments
-      const hasConflict = existingAppointments.some((apt) => {
-        const aptStart = new Date(apt.startTime);
-        const aptEnd = new Date(apt.endTime);
-        // Add buffer time
-        aptStart.setMinutes(aptStart.getMinutes() - buffer);
-        aptEnd.setMinutes(aptEnd.getMinutes() + buffer);
-
-        return slotStart < aptEnd && slotEnd > aptStart;
-      });
-
-      if (!hasConflict) {
-        slots.push(
-          slotStart.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          })
-        );
-      }
-
-      current += slotDuration;
-    }
-  }
+  const slots = generateSlots({
+    date,
+    availability,
+    existingAppointments,
+    serviceDuration: service.duration,
+    slotDuration,
+    bufferMinutes: buffer,
+  });
 
   return { slots };
 }
