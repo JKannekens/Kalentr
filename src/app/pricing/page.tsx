@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LandingNav } from "@/components/landing-nav";
 
 const features = [
   "Unlimited appointments",
@@ -16,21 +17,7 @@ const features = [
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50/60 to-white dark:from-gray-900 dark:to-gray-950">
-      {/* Nav */}
-      <nav className="border-b border-border/60 bg-white/80 backdrop-blur-md dark:bg-gray-950/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-bold">K</span>
-            Kalentr
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">Sign in</Link>
-            <Button asChild size="sm">
-              <Link href="/register">Start free trial</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <LandingNav />
 
       {/* Hero */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">

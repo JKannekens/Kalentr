@@ -218,7 +218,10 @@ model Appointment {
   
   // Notifications
   reminderSent Boolean @default(false)
-  
+
+  // Client self-cancel
+  cancelToken   String?   @unique
+
   // Cancellation
   cancelledAt   DateTime?
   cancelReason  String?

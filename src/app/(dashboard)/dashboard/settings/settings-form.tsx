@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { updateBranding, updateBookingConfig, updateAccount } from "./actions";
+import { updateBranding, updateBookingConfig, updateAccount, updateCustomDomain } from "./actions";
 import type { Tenant, BookingConfig } from "@prisma/client";
 
-type Tab = "branding" | "booking" | "account";
+type Tab = "branding" | "booking" | "account" | "domain";
 
 const TIMEZONES = [
   "UTC",
@@ -39,7 +39,7 @@ const TIMEZONES = [
 ];
 
 interface SettingsFormProps {
-  tenant: Pick<Tenant, "businessName" | "description" | "logo" | "primaryColor" | "subdomain" | "timezone">;
+  tenant: Pick<Tenant, "businessName" | "description" | "logo" | "primaryColor" | "subdomain" | "timezone" | "customDomain">;
   bookingConfig: BookingConfig | null;
 }
 
@@ -83,6 +83,7 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
   const branding = useFormState();
   const booking = useFormState();
   const account = useFormState();
+  const domain = useFormState();
 
   const tabClass = (t: Tab) =>
     `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
@@ -98,6 +99,7 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
         <button type="button" className={tabClass("branding")} onClick={() => setTab("branding")}>Branding</button>
         <button type="button" className={tabClass("booking")} onClick={() => setTab("booking")}>Booking rules</button>
         <button type="button" className={tabClass("account")} onClick={() => setTab("account")}>Account</button>
+        <button type="button" className={tabClass("domain")} onClick={() => setTab("domain")}>Custom domain</button>
       </div>
 
       <div className="p-6">
@@ -251,6 +253,63 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
             <Button type="submit" disabled={account.loading}>
               {account.loading ? "Saving..." : "Save account"}
             </Button>
+          </form>
+        )}
+
+        {/* Custom domain */}
+        {tab === "domain" && (
+          <form id="domain-form" onSubmit={(e) => domain.submit(updateCustomDomain, e)} className="space-y-5 max-w-lg">
+            <StatusMessages error={domain.error} success={domain.success} />
+
+            <div>
+              <label htmlFor="customDomain" className="block text-sm font-medium">Custom domain</label>
+              <input
+                id="customDomain"
+                name="customDomain"
+                type="text"
+                defaultValue={tenant.customDomain ?? ""}
+                placeholder="bookings.yourdomain.com"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600 font-mono text-sm"
+              />
+              <p className="mt-1 text-xs text-gray-500">Leave blank to use your default subdomain.</p>
+            </div>
+
+            {tenant.customDomain ? (
+              <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-4 text-sm dark:bg-emerald-950/30 dark:border-emerald-900">
+                <p className="font-medium text-emerald-700 dark:text-emerald-400 mb-2">Domain connected</p>
+                <p className="text-emerald-600 dark:text-emerald-500 font-mono">{tenant.customDomain}</p>
+              </div>
+            ) : (
+              <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 text-sm dark:bg-gray-800 dark:border-gray-700">
+                <p className="font-medium text-gray-700 dark:text-gray-300 mb-2">How to connect your domain</p>
+                <ol className="space-y-1 text-gray-500 dark:text-gray-400 list-decimal list-inside">
+                  <li>Go to your domain registrar's DNS settings</li>
+                  <li>Add a <span className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">CNAME</span> record pointing to <span className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">{tenant.subdomain}.kalentr.com</span></li>
+                  <li>Enter your custom domain above and save</li>
+                </ol>
+                <p className="mt-2 text-xs text-gray-400">DNS changes can take up to 48 hours to propagate.</p>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Button type="submit" disabled={domain.loading}>
+                {domain.loading ? "Saving..." : "Save domain"}
+              </Button>
+              {tenant.customDomain && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={domain.loading}
+                  onClick={() => {
+                    const input = document.querySelector<HTMLInputElement>("#customDomain");
+                    if (input) { input.value = ""; }
+                    document.getElementById("domain-form")?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+                  }}
+                >
+                  Remove domain
+                </Button>
+              )}
+            </div>
           </form>
         )}
       </div>

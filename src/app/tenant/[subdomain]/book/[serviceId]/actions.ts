@@ -165,6 +165,7 @@ export async function createBooking(formData: FormData): Promise<{
   }
 
   // Create appointment
+  const cancelToken = crypto.randomUUID();
   const appointment = await prisma.appointment.create({
     data: {
       tenantId: service.tenantId,
@@ -176,6 +177,7 @@ export async function createBooking(formData: FormData): Promise<{
       endTime,
       notes,
       status: "CONFIRMED",
+      cancelToken,
     },
   });
 
@@ -198,6 +200,9 @@ export async function createBooking(formData: FormData): Promise<{
     include: { owner: true },
   });
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const cancellationUrl = `${appUrl}/cancel/${cancelToken}`;
+
   // Send confirmation to client (non-blocking)
   sendEmail({
     to: clientEmail.toLowerCase(),
@@ -211,6 +216,7 @@ export async function createBooking(formData: FormData): Promise<{
       time: formattedTime,
       duration: service.duration,
       notes,
+      cancellationUrl,
     }),
   }).catch(console.error);
 

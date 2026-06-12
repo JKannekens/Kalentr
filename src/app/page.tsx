@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LandingNav } from "@/components/landing-nav";
 import {
   Calendar,
   Clock,
@@ -16,34 +17,7 @@ import {
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950 text-foreground">
-      {/* ─── Nav ─── */}
-      <header className="sticky top-0 z-50 border-b border-gray-100 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-2 font-semibold text-lg tracking-tight">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-white text-sm font-bold shadow-sm">
-                K
-              </span>
-              Kalentr
-            </div>
-            <nav className="hidden md:flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-              <Link href="#features" className="hover:text-gray-900 dark:hover:text-white transition-colors">Features</Link>
-              <Link href="#how-it-works" className="hover:text-gray-900 dark:hover:text-white transition-colors">How it works</Link>
-              <Link href="/pricing" className="hover:text-gray-900 dark:hover:text-white transition-colors">Pricing</Link>
-            </nav>
-            <div className="flex items-center gap-2">
-              <Link href="/login">
-                <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-400">Sign in</Button>
-              </Link>
-              <Link href="/register">
-                <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm">
-                  Start free trial
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <LandingNav />
 
       <main className="flex-1">
         {/* ─── Hero ─── */}
