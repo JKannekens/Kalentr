@@ -66,6 +66,9 @@ export async function createTenant(formData: FormData): Promise<OnboardingResult
     return { success: false, error: "You already have a business set up" };
   }
 
+  const trialEndsAt = new Date();
+  trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+
   // Create tenant with default booking config
   await prisma.tenant.create({
     data: {
@@ -74,6 +77,8 @@ export async function createTenant(formData: FormData): Promise<OnboardingResult
       description,
       timezone,
       ownerId: session.user.id,
+      subscriptionStatus: "trialing",
+      trialEndsAt,
       bookingConfig: {
         create: {
           minAdvanceHours: 1,

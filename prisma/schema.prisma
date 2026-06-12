@@ -97,6 +97,12 @@ model Tenant {
   ownerId String @unique
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
+  // Subscription / billing
+  subscriptionStatus  String    @default("trialing") // trialing | active | past_due | canceled | expired
+  trialEndsAt         DateTime?
+  stripeCustomerId    String?   @unique
+  stripeSubscriptionId String?  @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

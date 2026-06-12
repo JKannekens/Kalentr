@@ -32,6 +32,9 @@ async function main() {
     },
   });
 
+  const trialEndsAt = new Date();
+  trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+
   const tenant = await prisma.tenant.create({
     data: {
       subdomain: "alexmorgan",
@@ -41,6 +44,8 @@ async function main() {
       primaryColor: "#6366f1",
       timezone: "Europe/Amsterdam",
       ownerId: user.id,
+      subscriptionStatus: "trialing",
+      trialEndsAt,
     },
   });
 
