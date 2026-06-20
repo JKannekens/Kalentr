@@ -26,61 +26,50 @@ export default async function TenantLayout({
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-gray-50"
-      style={{ "--primary-color": tenant.primaryColor } as React.CSSProperties}
+      className="min-h-screen flex flex-col"
+      style={{
+        background: `linear-gradient(to bottom right, ${tenant.primaryColor}14, #ffffff 60%)`,
+      }}
     >
-      {/* Hero header */}
-      <header
-        style={{ background: tenant.primaryColor }}
-        className="relative overflow-hidden"
-      >
-        {/* Subtle texture overlay */}
-        <div className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
-        <div className="relative mx-auto max-w-4xl px-4 py-10 sm:py-14">
-          <div className="flex items-center gap-5">
+      {/* Slim brand bar */}
+      <header className="sticky top-0 z-20 border-b border-gray-200/70 bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center gap-2.5 px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
             {tenant.logo ? (
               <Image
                 src={tenant.logo}
                 alt={tenant.businessName}
-                width={64}
-                height={64}
-                className="h-16 w-16 rounded-2xl object-cover shadow-lg ring-2 ring-white/30"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-lg object-cover shadow-sm"
               />
             ) : (
-              <div className="h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl font-bold text-white ring-2 ring-white/30 shadow-lg">
+              <span
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white shadow-sm"
+                style={{ background: tenant.primaryColor }}
+              >
                 {initials}
-              </div>
+              </span>
             )}
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                {tenant.businessName}
-              </h1>
-              {tenant.description && (
-                <p className="mt-1 text-white/75 text-sm sm:text-base max-w-lg">
-                  {tenant.description}
-                </p>
-              )}
-            </div>
-          </div>
+            <span className="font-semibold tracking-tight text-gray-900">
+              {tenant.businessName}
+            </span>
+          </Link>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
         {children}
       </main>
 
-      <footer className="border-t bg-white">
-        <div className="mx-auto max-w-4xl px-4 py-5 flex items-center justify-between text-sm text-gray-400">
-          <span>© {new Date().getFullYear()} {tenant.businessName}</span>
+      <footer className="border-t border-gray-200/70 bg-white/60">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-5 text-sm text-gray-400 sm:px-6">
+          <span>
+            © {new Date().getFullYear()} {tenant.businessName}
+          </span>
           <Link
             href="https://kalentr.com"
-            className="hover:text-gray-600 transition-colors"
+            className="transition-colors hover:text-gray-600"
             target="_blank"
           >
             Powered by Kalentr
