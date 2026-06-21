@@ -4,8 +4,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { CalendarDays } from "lucide-react";
 import { ServiceGrid } from "./service-grid";
-import { AvailabilityPreview } from "./availability-preview";
-import { generateSlots } from "@/lib/generate-slots";
+import { OpeningHours } from "./opening-hours";
 
 export default async function TenantHomePage({
   params,
@@ -19,16 +18,15 @@ export default async function TenantHomePage({
     notFound();
   }
 
-  const [services, availability, bookingConfig] = await Promise.all([
+  const [services, availability] = await Promise.all([
     prisma.service.findMany({
       where: { tenantId: tenant.id, isActive: true },
       orderBy: { name: "asc" },
     }),
     prisma.availability.findMany({
       where: { tenantId: tenant.id, isActive: true },
-      orderBy: { dayOfWeek: "asc" },
+      orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
     }),
-    prisma.bookingConfig.findUnique({ where: { tenantId: tenant.id } }),
   ]);
 
   const initials = tenant.businessName
@@ -51,19 +49,6 @@ export default async function TenantHomePage({
       </div>
     );
   }
-
-  // Build a real availability preview for the right-hand calendar panel.
-  const availableWeekdays = Array.from(
-    new Set(availability.map((a) => a.dayOfWeek))
-  );
-  const maxAdvanceDays = bookingConfig?.maxAdvanceDays ?? 30;
-  const { nextDate, slots } = await getNextAvailability(
-    tenant.id,
-    services[0],
-    availability,
-    bookingConfig,
-    maxAdvanceDays
-  );
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
@@ -101,77 +86,27 @@ export default async function TenantHomePage({
             </p>
           )}
 
+          <div className="mb-3">
+            <h2 className="text-sm font-semibold text-gray-900">Services</h2>
+            <p className="text-xs text-gray-500">
+              Pick a service to choose a date and time.
+            </p>
+          </div>
           <ServiceGrid services={services} primaryColor={tenant.primaryColor} />
         </div>
 
-        {/* Right: availability calendar */}
+        {/* Right: informational opening hours */}
         <div className="lg:col-span-2">
-          <AvailabilityPreview
+          <OpeningHours
             primaryColor={tenant.primaryColor}
-            availableWeekdays={availableWeekdays}
-            maxAdvanceDays={maxAdvanceDays}
-            nextDate={nextDate ? nextDate.toISOString() : null}
-            slots={slots}
+            availability={availability.map((a) => ({
+              dayOfWeek: a.dayOfWeek,
+              startTime: a.startTime,
+              endTime: a.endTime,
+            }))}
           />
         </div>
       </div>
     </div>
   );
-}
-
-/**
- * Find the next bookable date and a few real open slots for the calendar preview.
- */
-async function getNextAvailability(
-  tenantId: string,
-  service: { id: string; duration: number },
-  availability: { dayOfWeek: number; startTime: string; endTime: string }[],
-  bookingConfig: {
-    slotDurationMinutes: number;
-    bufferMinutes: number;
-  } | null,
-  maxAdvanceDays: number
-): Promise<{ nextDate: Date | null; slots: string[] }> {
-  const availableDays = new Set(availability.map((a) => a.dayOfWeek));
-  if (availableDays.size === 0) {
-    return { nextDate: null, slots: [] };
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  for (let offset = 0; offset <= maxAdvanceDays; offset++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + offset);
-    if (!availableDays.has(date.getDay())) continue;
-
-    const dayStart = new Date(date);
-    const dayEnd = new Date(date);
-    dayEnd.setDate(dayEnd.getDate() + 1);
-
-    const appointments = await prisma.appointment.findMany({
-      where: {
-        tenantId,
-        status: { notIn: ["CANCELLED"] },
-        startTime: { gte: dayStart, lt: dayEnd },
-      },
-      select: { startTime: true, endTime: true },
-    });
-
-    const windows = availability.filter((a) => a.dayOfWeek === date.getDay());
-    const slots = generateSlots({
-      date: date.toISOString().split("T")[0],
-      availability: windows,
-      existingAppointments: appointments,
-      serviceDuration: service.duration,
-      slotDuration: bookingConfig?.slotDurationMinutes ?? 30,
-      bufferMinutes: bookingConfig?.bufferMinutes ?? 0,
-    });
-
-    if (slots.length > 0) {
-      return { nextDate: date, slots: slots.slice(0, 4) };
-    }
-  }
-
-  return { nextDate: null, slots: [] };
 }
