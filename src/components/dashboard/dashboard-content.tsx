@@ -91,10 +91,12 @@ export function DashboardContent({
     left = Math.max(8, Math.min(left, viewportW - popoverWidth - 8));
 
     const spaceBelow = viewportH - rect.bottom;
+    // The popover is position:fixed, so rect coords (viewport-relative) are used
+    // directly — adding scrollY would offset it away from the anchor.
     const top =
       spaceBelow > 200
-        ? rect.bottom + gap + window.scrollY
-        : rect.top - gap + window.scrollY;
+        ? rect.bottom + gap
+        : rect.top - gap;
     const transformOrigin = spaceBelow > 200 ? "top center" : "bottom center";
     const translateY = spaceBelow > 200 ? "0" : "-100%";
 
