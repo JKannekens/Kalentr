@@ -48,6 +48,7 @@ function makeAppointment(
     reminderSent: false,
     cancelledAt: null,
     cancelReason: null,
+    cancelToken: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -55,70 +56,70 @@ function makeAppointment(
 
 describe("AppointmentList — empty states", () => {
   it("shows upcoming empty state when list is empty", () => {
-    render(<AppointmentList appointments={[]} type="upcoming" />);
+    render(<AppointmentList appointments={[]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText(/No upcoming appointments/i)).toBeInTheDocument();
   });
 
   it("shows past empty state when list is empty", () => {
-    render(<AppointmentList appointments={[]} type="past" />);
+    render(<AppointmentList appointments={[]} type="past" use24Hour={false} />);
     expect(screen.getByText(/No past appointments/i)).toBeInTheDocument();
   });
 });
 
 describe("AppointmentList — card content", () => {
   it("renders service name and client name", () => {
-    render(<AppointmentList appointments={[makeAppointment()]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment()]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText("Consultation")).toBeInTheDocument();
     expect(screen.getByText("Jane Doe")).toBeInTheDocument();
   });
 
   it("renders the client email", () => {
-    render(<AppointmentList appointments={[makeAppointment()]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment()]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText("jane@example.com")).toBeInTheDocument();
   });
 
   it("shows a human-readable status badge (Confirmed)", () => {
-    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText("Confirmed")).toBeInTheDocument();
   });
 
   it("shows Pending badge", () => {
-    render(<AppointmentList appointments={[makeAppointment("PENDING")]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment("PENDING")]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText("Pending")).toBeInTheDocument();
   });
 
   it("shows Cancelled badge", () => {
-    render(<AppointmentList appointments={[makeAppointment("CANCELLED")]} type="past" />);
+    render(<AppointmentList appointments={[makeAppointment("CANCELLED")]} type="past" use24Hour={false} />);
     expect(screen.getByText("Cancelled")).toBeInTheDocument();
   });
 
   it("renders notes with message icon when present", () => {
     const apt = { ...makeAppointment(), notes: "Please bring your portfolio" };
-    render(<AppointmentList appointments={[apt]} type="upcoming" />);
+    render(<AppointmentList appointments={[apt]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText("Please bring your portfolio")).toBeInTheDocument();
   });
 });
 
 describe("AppointmentList — action buttons", () => {
   it("shows Complete and Cancel buttons for CONFIRMED upcoming", () => {
-    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText("Complete")).toBeInTheDocument();
     expect(screen.getByText("Cancel")).toBeInTheDocument();
   });
 
   it("shows Confirm button for PENDING upcoming", () => {
-    render(<AppointmentList appointments={[makeAppointment("PENDING")]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment("PENDING")]} type="upcoming" use24Hour={false} />);
     expect(screen.getByText("Confirm")).toBeInTheDocument();
   });
 
   it("hides action buttons for past appointments", () => {
-    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="past" />);
+    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="past" use24Hour={false} />);
     expect(screen.queryByText("Complete")).not.toBeInTheDocument();
     expect(screen.queryByText("Cancel")).not.toBeInTheDocument();
   });
 
   it("hides action buttons for cancelled appointments", () => {
-    render(<AppointmentList appointments={[makeAppointment("CANCELLED")]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment("CANCELLED")]} type="upcoming" use24Hour={false} />);
     expect(screen.queryByText("Cancel")).not.toBeInTheDocument();
   });
 
@@ -126,7 +127,7 @@ describe("AppointmentList — action buttons", () => {
     const { updateAppointmentStatus } = await import(
       "@/app/(dashboard)/dashboard/appointments/actions"
     );
-    render(<AppointmentList appointments={[makeAppointment("PENDING")]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment("PENDING")]} type="upcoming" use24Hour={false} />);
     fireEvent.click(screen.getByText("Confirm"));
     await waitFor(() => {
       expect(updateAppointmentStatus).toHaveBeenCalledWith("a1", "CONFIRMED");
@@ -137,7 +138,7 @@ describe("AppointmentList — action buttons", () => {
     const { updateAppointmentStatus } = await import(
       "@/app/(dashboard)/dashboard/appointments/actions"
     );
-    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="upcoming" />);
+    render(<AppointmentList appointments={[makeAppointment("CONFIRMED")]} type="upcoming" use24Hour={false} />);
     fireEvent.click(screen.getByText("Cancel"));
     await waitFor(() => {
       expect(updateAppointmentStatus).toHaveBeenCalledWith("a1", "CANCELLED");

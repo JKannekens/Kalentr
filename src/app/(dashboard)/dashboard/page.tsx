@@ -107,6 +107,7 @@ export default async function DashboardPage() {
         appointments={appointments}
         services={services}
         timezone={tenant.timezone}
+        use24Hour={tenant.use24Hour}
         timeOff={timeOff}
       />
     </div>

@@ -1,4 +1,5 @@
 import type { Appointment, Service, TimeOff } from "@prisma/client";
+import { formatClock, formatTime as formatTimeShared } from "@/lib/format-time";
 
 export type AppointmentWithService = Appointment & { service: Service };
 export type CalendarView = "month" | "week" | "day";
@@ -50,17 +51,12 @@ export function addDays(date: Date, n: number): Date {
   return d;
 }
 
-export function formatHour(h: number): string {
-  const period = h >= 12 ? "PM" : "AM";
-  const display = h % 12 || 12;
-  return `${display}:00 ${period}`;
+export function formatHour(h: number, use24Hour = false): string {
+  return formatClock(h, 0, use24Hour);
 }
 
-export function formatTime(date: Date): string {
-  return date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
+export function formatTime(date: Date, use24Hour = false): string {
+  return formatTimeShared(date, use24Hour);
 }
 
 export function isTodayDate(year: number, month: number, day: number): boolean {

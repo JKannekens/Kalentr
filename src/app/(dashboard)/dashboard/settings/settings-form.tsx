@@ -39,7 +39,7 @@ const TIMEZONES = [
 ];
 
 interface SettingsFormProps {
-  tenant: Pick<Tenant, "businessName" | "description" | "logo" | "primaryColor" | "subdomain" | "timezone" | "customDomain">;
+  tenant: Pick<Tenant, "businessName" | "description" | "logo" | "location" | "primaryColor" | "subdomain" | "timezone" | "use24Hour" | "customDomain">;
   bookingConfig: BookingConfig | null;
 }
 
@@ -130,6 +130,19 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
                 placeholder="Shown on your microsite"
                 className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
+            </div>
+
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium">Location</label>
+              <input
+                id="location"
+                name="location"
+                type="text"
+                defaultValue={tenant.location ?? ""}
+                placeholder="e.g. 12 Main St, Amsterdam — leave blank if remote"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <p className="mt-1 text-xs text-gray-500">Shown on your microsite and booking confirmations. Leave empty if you work remotely.</p>
             </div>
 
             <div>
@@ -248,6 +261,20 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
                 ))}
               </select>
               <p className="mt-1 text-xs text-gray-500">Used to display appointment times correctly</p>
+            </div>
+
+            <div>
+              <label htmlFor="timeFormat" className="block text-sm font-medium">Time format</label>
+              <select
+                id="timeFormat"
+                name="timeFormat"
+                defaultValue={tenant.use24Hour ? "24" : "12"}
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+              >
+                <option value="12">12-hour (1:30 PM)</option>
+                <option value="24">24-hour (13:30)</option>
+              </select>
+              <p className="mt-1 text-xs text-gray-500">How times appear on your microsite, emails, and dashboard</p>
             </div>
 
             <Button type="submit" disabled={account.loading}>

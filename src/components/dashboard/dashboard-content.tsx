@@ -5,6 +5,7 @@ import { Calendar } from "@/components/calendar/calendar";
 import { ServicesSidebar } from "@/components/dashboard/services-sidebar";
 import { SettingsShortcuts } from "@/components/dashboard/settings-shortcuts";
 import { X } from "lucide-react";
+import { formatTime } from "@/lib/format-time";
 import type { Appointment, Service, TimeOff } from "@prisma/client";
 
 type AppointmentWithService = Appointment & { service: Service };
@@ -13,6 +14,7 @@ interface DashboardContentProps {
   appointments: AppointmentWithService[];
   services: Service[];
   timezone?: string;
+  use24Hour: boolean;
   timeOff: TimeOff[];
 }
 
@@ -26,16 +28,10 @@ const STATUS_COLORS: Record<string, string> = {
   NO_SHOW: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400",
 };
 
-function formatTime(date: Date): string {
-  return date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 export function DashboardContent({
   appointments,
   services,
+  use24Hour,
   timeOff,
 }: DashboardContentProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -120,6 +116,7 @@ export function DashboardContent({
             selectedDate={selectedDate}
             onDateSelect={setSelectedDate}
             onAppointmentClick={openPopover}
+            use24Hour={use24Hour}
             timeOff={timeOff}
           />
         </div>
@@ -160,8 +157,8 @@ export function DashboardContent({
           </div>
 
           <p className="text-gray-500 dark:text-gray-400 mb-3">
-            {formatTime(new Date(popover.appointment.startTime))} –{" "}
-            {formatTime(new Date(popover.appointment.endTime))},{" "}
+            {formatTime(new Date(popover.appointment.startTime), use24Hour)} –{" "}
+            {formatTime(new Date(popover.appointment.endTime), use24Hour)},{" "}
             {new Intl.DateTimeFormat("en-US", {
               weekday: "short",
               month: "short",

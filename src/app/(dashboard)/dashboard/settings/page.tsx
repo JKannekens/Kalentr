@@ -18,9 +18,11 @@ export default async function SettingsPage() {
       businessName: true,
       description: true,
       logo: true,
+      location: true,
       primaryColor: true,
       subdomain: true,
       timezone: true,
+      use24Hour: true,
       customDomain: true,
     },
   });

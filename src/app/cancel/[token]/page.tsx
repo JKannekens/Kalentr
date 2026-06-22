@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { CancelConfirm } from "./cancel-confirm";
+import { formatTime } from "@/lib/format-time";
 
 export default async function CancelPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -14,7 +15,7 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
       endTime: true,
       status: true,
       service: { select: { name: true, duration: true } },
-      tenant: { select: { businessName: true, primaryColor: true } },
+      tenant: { select: { businessName: true, primaryColor: true, use24Hour: true } },
     },
   });
 
@@ -23,9 +24,7 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
   const formattedDate = appointment.startTime.toLocaleDateString("en-US", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
-  const formattedTime = appointment.startTime.toLocaleTimeString("en-US", {
-    hour: "numeric", minute: "2-digit", hour12: true,
-  });
+  const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour);
   const hoursUntil = (appointment.startTime.getTime() - Date.now()) / 3_600_000;
 
   return (

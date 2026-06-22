@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { updateAvailability } from "./actions";
+import { formatTime } from "@/lib/format-time";
 import type { Availability } from "@prisma/client";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0]; // Monday first
 
 const TIME_OPTIONS = generateTimeOptions();
 
@@ -23,9 +25,10 @@ function generateTimeOptions() {
 
 interface AvailabilityFormProps {
   initialAvailability: Map<number, Availability>;
+  use24Hour: boolean;
 }
 
-export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps) {
+export function AvailabilityForm({ initialAvailability, use24Hour }: AvailabilityFormProps) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,7 +101,9 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
         )}
 
         <div className="divide-y dark:divide-gray-700">
-          {schedule.map((day) => (
+          {DISPLAY_ORDER.map((dayOfWeek) => {
+            const day = schedule.find((d) => d.dayOfWeek === dayOfWeek)!;
+            return (
             <div
               key={day.dayOfWeek}
               className="flex items-center gap-4 px-6 py-4"
@@ -126,7 +131,7 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
                   >
                     {TIME_OPTIONS.map((time) => (
                       <option key={time} value={time}>
-                        {formatTime(time)}
+                        {formatTime(time, use24Hour)}
                       </option>
                     ))}
                   </select>
@@ -140,7 +145,7 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
                   >
                     {TIME_OPTIONS.map((time) => (
                       <option key={time} value={time}>
-                        {formatTime(time)}
+                        {formatTime(time, use24Hour)}
                       </option>
                     ))}
                   </select>
@@ -149,7 +154,8 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
                 <span className="text-sm text-gray-500">Unavailable</span>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="border-t px-6 py-4 dark:border-gray-700">
@@ -160,11 +166,4 @@ export function AvailabilityForm({ initialAvailability }: AvailabilityFormProps)
       </div>
     </form>
   );
-}
-
-function formatTime(time: string): string {
-  const [hours, minutes] = time.split(":").map(Number);
-  const period = hours >= 12 ? "PM" : "AM";
-  const displayHours = hours % 12 || 12;
-  return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
 }

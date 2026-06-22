@@ -2,7 +2,7 @@ import { getTenant } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, MapPin } from "lucide-react";
 import { ServiceGrid } from "./service-grid";
 import { OpeningHours } from "./opening-hours";
 
@@ -77,6 +77,12 @@ export default async function TenantHomePage({
                 {tenant.businessName}
               </h1>
               <p className="text-sm text-gray-500">Book an appointment online</p>
+              {tenant.location && (
+                <p className="mt-1 inline-flex items-center gap-1 text-sm text-gray-500">
+                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                  {tenant.location}
+                </p>
+              )}
             </div>
           </div>
 
@@ -99,6 +105,7 @@ export default async function TenantHomePage({
         <div className="lg:col-span-2">
           <OpeningHours
             primaryColor={tenant.primaryColor}
+            use24Hour={tenant.use24Hour}
             availability={availability.map((a) => ({
               dayOfWeek: a.dayOfWeek,
               startTime: a.startTime,

@@ -25,6 +25,7 @@ export interface WeekViewProps {
     appointment: AppointmentWithService,
     anchorRect: DOMRect,
   ) => void;
+  use24Hour: boolean;
   timeOff: TimeOff[];
 }
 
@@ -34,6 +35,7 @@ export function WeekView({
   selectedDate,
   onSelectDay,
   onAppointmentClick,
+  use24Hour,
   timeOff,
 }: WeekViewProps) {
   const weekStart = getWeekStart(currentDate);
@@ -104,9 +106,15 @@ export function WeekView({
                 className="px-2 pt-2.5 text-xs text-gray-400 dark:text-gray-500 leading-tight border-b border-gray-100 dark:border-gray-800 last:border-b-0"
                 style={{ height: HOUR_HEIGHT }}
               >
-                <span>{hour % 12 || 12}:00</span>
-                <br />
-                <span>{hour >= 12 ? "PM" : "AM"}</span>
+                {use24Hour ? (
+                  <span>{String(hour).padStart(2, "0")}:00</span>
+                ) : (
+                  <>
+                    <span>{hour % 12 || 12}:00</span>
+                    <br />
+                    <span>{hour >= 12 ? "PM" : "AM"}</span>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -161,7 +169,7 @@ export function WeekView({
                     >
                       <p className="font-semibold truncate">{app.service.name}</p>
                       {height >= 36 && (
-                        <p className="opacity-75 truncate">{formatTime(start)}</p>
+                        <p className="opacity-75 truncate">{formatTime(start, use24Hour)}</p>
                       )}
                     </button>
                   );

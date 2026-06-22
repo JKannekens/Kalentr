@@ -7,6 +7,7 @@ import {
   newBookingNotificationEmail,
 } from "@/lib/email-templates";
 import { generateSlots } from "@/lib/generate-slots";
+import { formatTime } from "@/lib/format-time";
 import { z } from "zod";
 
 const BookingSchema = z.object({
@@ -188,11 +189,7 @@ export async function createBooking(formData: FormData): Promise<{
     month: "long",
     day: "numeric",
   });
-  const formattedTime = startTime.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const formattedTime = formatTime(startTime, service.tenant.use24Hour);
 
   // Get tenant owner for notification
   const tenant = await prisma.tenant.findUnique({
@@ -215,6 +212,7 @@ export async function createBooking(formData: FormData): Promise<{
       date: formattedDate,
       time: formattedTime,
       duration: service.duration,
+      location: service.tenant.location,
       notes,
       cancellationUrl,
     }),

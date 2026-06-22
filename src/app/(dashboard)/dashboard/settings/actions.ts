@@ -17,6 +17,7 @@ export async function updateBranding(formData: FormData) {
 
   const description = (formData.get("description") as string)?.trim() || null;
   const logo = (formData.get("logo") as string)?.trim() || null;
+  const location = (formData.get("location") as string)?.trim() || null;
   const primaryColor = (formData.get("primaryColor") as string)?.trim() || "#3b82f6";
 
   // Validate logo URL if provided
@@ -30,7 +31,7 @@ export async function updateBranding(formData: FormData) {
 
   await prisma.tenant.update({
     where: { id: tenant.id },
-    data: { businessName, description, logo, primaryColor },
+    data: { businessName, description, logo, location, primaryColor },
   });
 
   revalidatePath("/dashboard/settings");
@@ -67,10 +68,11 @@ export async function updateAccount(formData: FormData) {
   if (!tenant) return { success: false, error: "No business found" };
 
   const timezone = (formData.get("timezone") as string)?.trim() || "UTC";
+  const use24Hour = formData.get("timeFormat") === "24";
 
   await prisma.tenant.update({
     where: { id: tenant.id },
-    data: { timezone },
+    data: { timezone, use24Hour },
   });
 
   revalidatePath("/dashboard/settings");

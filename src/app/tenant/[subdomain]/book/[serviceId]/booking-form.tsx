@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { createBooking, getAvailableSlots } from "./actions";
+import { formatTime } from "@/lib/format-time";
+import { MapPin } from "lucide-react";
 import type { Service, Availability, BookingConfig } from "@prisma/client";
 import type { TenantInfo } from "@/lib/tenant";
 
@@ -115,8 +117,14 @@ export function BookingForm({
               month: "long",
               day: "numeric",
             })}{" "}
-            at {selectedTime}
+            at {selectedTime && formatTime(selectedTime, tenant.use24Hour)}
           </p>
+          {tenant.location && (
+            <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
+              {tenant.location}
+            </p>
+          )}
         </div>
         <Button onClick={() => router.push("/")}>Book Another</Button>
       </div>
@@ -124,7 +132,13 @@ export function BookingForm({
   }
 
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6"
+      style={{
+        "--accent": tenant.primaryColor,
+        "--accent-soft": `${tenant.primaryColor}1f`,
+      } as React.CSSProperties}
+    >
       {error && (
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
           {error}
@@ -204,11 +218,19 @@ export function BookingForm({
                   disabled={!isAvailable}
                   onClick={() => isAvailable && handleDateSelect(date)}
                   className={`min-h-12 p-2 border-r border-b border-gray-100 dark:border-gray-800 flex items-start transition-colors
-                    ${isSelected ? "bg-emerald-50 dark:bg-emerald-950/40" : isAvailable ? "hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer" : "cursor-not-allowed"}
+                    ${isSelected ? "bg-(--accent-soft)" : isAvailable ? "hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer" : "cursor-not-allowed"}
                   `}
                 >
-                  <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium
-                    ${isToday ? "bg-emerald-600 text-white" : isSelected ? "text-emerald-600 dark:text-emerald-400 font-semibold" : isAvailable ? "text-gray-700 dark:text-gray-300" : "text-gray-300 dark:text-gray-700"}
+                  <span
+                    style={
+                      isToday
+                        ? { backgroundColor: "var(--accent)" }
+                        : isSelected
+                        ? { color: "var(--accent)" }
+                        : undefined
+                    }
+                    className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium
+                    ${isToday ? "text-white" : isSelected ? "font-semibold" : isAvailable ? "text-gray-700 dark:text-gray-300" : "text-gray-300 dark:text-gray-700"}
                   `}>
                     {cell.day}
                   </span>
@@ -249,9 +271,9 @@ export function BookingForm({
                 <button
                   key={time}
                   onClick={() => handleTimeSelect(time)}
-                  className="rounded-md border px-3 py-2 text-sm hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                  className="rounded-md border px-3 py-2 text-sm hover:border-(--accent) hover:bg-(--accent-soft)"
                 >
-                  {time}
+                  {formatTime(time, tenant.use24Hour)}
                 </button>
               ))}
             </div>
@@ -277,7 +299,7 @@ export function BookingForm({
                 month: "long",
                 day: "numeric",
               })}{" "}
-              at {selectedTime}
+              at {formatTime(selectedTime, tenant.use24Hour)}
             </p>
           </div>
 
@@ -332,7 +354,12 @@ export function BookingForm({
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={submitting}>
+            <Button
+              type="submit"
+              className="w-full text-white hover:opacity-90"
+              style={{ backgroundColor: tenant.primaryColor }}
+              disabled={submitting}
+            >
               {submitting ? "Booking..." : "Confirm Booking"}
             </Button>
           </form>

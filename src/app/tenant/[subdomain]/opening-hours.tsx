@@ -1,4 +1,5 @@
 import { Clock } from "lucide-react";
+import { formatTime } from "@/lib/format-time";
 
 interface AvailabilityWindow {
   dayOfWeek: number; // 0 = Sunday … 6 = Saturday
@@ -8,6 +9,7 @@ interface AvailabilityWindow {
 
 interface OpeningHoursProps {
   primaryColor: string;
+  use24Hour: boolean;
   availability: AvailabilityWindow[];
 }
 
@@ -22,18 +24,11 @@ const DAYS: { label: string; dow: number }[] = [
   { label: "Sunday", dow: 0 },
 ];
 
-function formatTime(hhmm: string): string {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour12 = h % 12 || 12;
-  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
-}
-
 /**
  * Read-only weekly hours so clients can see when this business takes bookings.
  * Purely informational — booking itself happens by picking a service.
  */
-export function OpeningHours({ primaryColor, availability }: OpeningHoursProps) {
+export function OpeningHours({ primaryColor, use24Hour, availability }: OpeningHoursProps) {
   const openDays = new Set(availability.map((a) => a.dayOfWeek));
 
   // Next day (within two weeks) that has availability, for a quick highlight.
@@ -77,7 +72,7 @@ export function OpeningHours({ primaryColor, availability }: OpeningHoursProps) 
             {DAYS.map(({ label, dow }) => {
               const windows = availability
                 .filter((a) => a.dayOfWeek === dow)
-                .map((a) => `${formatTime(a.startTime)} – ${formatTime(a.endTime)}`);
+                .map((a) => `${formatTime(a.startTime, use24Hour)} – ${formatTime(a.endTime, use24Hour)}`);
               const isOpen = windows.length > 0;
               return (
                 <div
