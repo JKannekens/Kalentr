@@ -2,11 +2,12 @@
 
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, FROM_EMAIL } from "@/lib/email";
 import {
   bookingConfirmationEmail,
   newBookingNotificationEmail,
 } from "@/lib/email-templates";
+import { buildEventIcs, googleCalendarUrl, type CalendarEvent } from "@/lib/ics";
 import { getOpenSlots } from "@/services/booking";
 import { formatTime } from "@/lib/format-time";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
@@ -174,6 +175,20 @@ export async function createBooking(formData: FormData): Promise<{
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const cancellationUrl = `${appUrl}/cancel/${cancelToken}`;
 
+  // Calendar invite for the client (.ics attachment + Google Calendar link)
+  const calendarEvent: CalendarEvent = {
+    uid: `${appointmentId}@kalentr.com`,
+    title: `${service.name} — ${service.tenant.businessName}`,
+    description: `Your booking for ${service.name} with ${service.tenant.businessName}.${
+      cancellationUrl ? ` Need to cancel? ${cancellationUrl}` : ""
+    }`,
+    location: service.tenant.location ?? undefined,
+    start: startTime,
+    end: endTime,
+    organizerName: service.tenant.businessName,
+    organizerEmail: service.tenant.owner?.email ?? FROM_EMAIL,
+  };
+
   // Send confirmation to client (non-blocking)
   sendEmail({
     to: clientEmail.toLowerCase(),
@@ -189,7 +204,15 @@ export async function createBooking(formData: FormData): Promise<{
       location: service.tenant.location,
       notes,
       cancellationUrl,
+      calendarUrl: googleCalendarUrl(calendarEvent),
     }),
+    attachments: [
+      {
+        filename: "invite.ics",
+        content: Buffer.from(buildEventIcs(calendarEvent), "utf-8"),
+        contentType: "text/calendar",
+      },
+    ],
   }).catch(console.error);
 
   // Send notification to business owner (non-blocking)

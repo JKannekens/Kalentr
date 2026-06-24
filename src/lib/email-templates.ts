@@ -64,6 +64,7 @@ interface BookingConfirmationProps extends BaseTemplateProps {
   location?: string | null;
   notes?: string;
   cancellationUrl?: string;
+  calendarUrl?: string;
 }
 
 function locationRow(location?: string | null): string {
@@ -88,6 +89,7 @@ export function bookingConfirmationEmail({
   location,
   notes,
   cancellationUrl,
+  calendarUrl,
 }: BookingConfirmationProps): string {
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 20px;">Booking Confirmed!</h2>
@@ -134,7 +136,22 @@ export function bookingConfirmationEmail({
         </td>
       </tr>
     </table>
-    
+
+    ${
+      calendarUrl
+        ? `
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+      <tr>
+        <td>
+          <a href="${calendarUrl}" style="display: inline-block; padding: 10px 18px; background-color: ${primaryColor || "#3b82f6"}; color: #ffffff; font-size: 14px; font-weight: 500; text-decoration: none; border-radius: 8px;">Add to Google Calendar</a>
+          <span style="color: #6b7280; font-size: 13px; margin-left: 8px;">or open the attached invite</span>
+        </td>
+      </tr>
+    </table>
+    `
+        : ""
+    }
+
     ${
       cancellationUrl
         ? `
