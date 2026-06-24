@@ -34,6 +34,7 @@ export function BookingForm({
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -89,6 +90,7 @@ export function BookingForm({
       if (!result.success) {
         setError(result.error || "Booking failed");
       } else {
+        setPending(result.pending ?? false);
         setStep("confirm");
       }
     } catch {
@@ -101,14 +103,20 @@ export function BookingForm({
   if (step === "confirm") {
     return (
       <div className="text-center py-12">
-        <div className="mx-auto h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-          <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <div className={`mx-auto h-16 w-16 rounded-full flex items-center justify-center mb-4 ${pending ? "bg-amber-100" : "bg-green-100"}`}>
+          <svg className={`h-8 w-8 ${pending ? "text-amber-600" : "text-green-600"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {pending ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            )}
           </svg>
         </div>
-        <h3 className="text-xl font-semibold mb-2">Booking Confirmed!</h3>
+        <h3 className="text-xl font-semibold mb-2">{pending ? "Request Received" : "Booking Confirmed!"}</h3>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          You&apos;ll receive a confirmation email shortly.
+          {pending
+            ? "Your request has been sent. You'll get a confirmation email once it's approved."
+            : "You'll receive a confirmation email shortly."}
         </p>
         <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
           <p className="font-medium">{service.name}</p>

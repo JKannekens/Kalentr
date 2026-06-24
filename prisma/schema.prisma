@@ -129,6 +129,7 @@ model BookingConfig {
   maxAdvanceDays        Int    @default(30)    // Maximum days in advance to book
   slotDurationMinutes   Int    @default(30)    // Default slot duration
   bufferMinutes         Int    @default(0)     // Buffer between appointments
+  requireApproval       Boolean @default(false) // Bookings start PENDING until the owner confirms
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

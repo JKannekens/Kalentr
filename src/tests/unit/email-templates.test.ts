@@ -65,6 +65,21 @@ describe("bookingConfirmationEmail", () => {
     expect(html).toContain("<!DOCTYPE html>");
     expect(html).toContain("</html>");
   });
+
+  it("shows confirmed wording and a calendar button by default", () => {
+    const html = bookingConfirmationEmail({
+      ...base,
+      calendarUrl: "https://calendar.google.com/x",
+    });
+    expect(html).toContain("Booking Confirmed!");
+    expect(html).toContain("Add to Google Calendar");
+  });
+
+  it("shows pending wording and no calendar button when pending", () => {
+    const html = bookingConfirmationEmail({ ...base, pending: true });
+    expect(html).toContain("Booking Request Received");
+    expect(html).not.toContain("Add to Google Calendar");
+  });
 });
 
 describe("newBookingNotificationEmail", () => {

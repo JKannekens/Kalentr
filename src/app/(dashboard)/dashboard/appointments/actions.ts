@@ -5,9 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { getTenantByOwner } from "@/lib/tenant";
 import { revalidatePath } from "next/cache";
 import { AppointmentStatus } from "@prisma/client";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, FROM_EMAIL } from "@/lib/email";
 import { appointmentStatusChangeEmail } from "@/lib/email-templates";
 import { formatTime } from "@/lib/format-time";
+import { buildEventIcs, type CalendarEvent } from "@/lib/ics";
 
 export async function updateAppointmentStatus(
   appointmentId: string,
@@ -50,6 +51,31 @@ export async function updateAppointmentStatus(
     });
     const time = formatTime(appointment.startTime, tenant.use24Hour, tenant.timezone);
 
+    // On confirmation, send the calendar invite (e.g. for approval-gated bookings
+    // whose initial email skipped it).
+    const attachments =
+      status === "CONFIRMED"
+        ? (() => {
+            const event: CalendarEvent = {
+              uid: `${appointment.id}@kalentr.com`,
+              title: `${appointment.service.name} — ${tenant.businessName}`,
+              description: `Your booking for ${appointment.service.name} with ${tenant.businessName}.`,
+              location: tenant.location ?? undefined,
+              start: appointment.startTime,
+              end: appointment.endTime,
+              organizerName: tenant.businessName,
+              organizerEmail: session.user.email ?? FROM_EMAIL,
+            };
+            return [
+              {
+                filename: "invite.ics",
+                content: Buffer.from(buildEventIcs(event), "utf-8"),
+                contentType: "text/calendar",
+              },
+            ];
+          })()
+        : undefined;
+
     sendEmail({
       to: appointment.clientEmail,
       subject:
@@ -65,6 +91,7 @@ export async function updateAppointmentStatus(
         time,
         status,
       }),
+      attachments,
     }).catch(console.error);
   }
 
