@@ -230,6 +230,20 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
               <p className="mt-1 text-xs text-gray-500">Gap added after each appointment before the next slot opens</p>
             </div>
 
+            <label htmlFor="requireApproval" className="flex items-start gap-3 rounded-md border px-3 py-3 cursor-pointer dark:border-gray-600">
+              <input
+                id="requireApproval"
+                name="requireApproval"
+                type="checkbox"
+                defaultChecked={bookingConfig?.requireApproval ?? false}
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+              />
+              <span>
+                <span className="block text-sm font-medium">Require manual approval</span>
+                <span className="block text-xs text-gray-500">New bookings stay pending until you confirm them. Off = bookings are confirmed instantly.</span>
+              </span>
+            </label>
+
             <Button type="submit" disabled={booking.loading}>
               {booking.loading ? "Saving..." : "Save booking rules"}
             </Button>

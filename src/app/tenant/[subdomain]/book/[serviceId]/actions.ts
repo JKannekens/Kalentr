@@ -54,6 +54,7 @@ export async function createBooking(formData: FormData): Promise<{
   success: boolean;
   error?: string;
   appointmentId?: string;
+  pending?: boolean;
 }> {
   const limit = await rateLimit(`booking:${await getClientIp()}`, 10, 3600);
   if (!limit.success) {
@@ -88,6 +89,12 @@ export async function createBooking(formData: FormData): Promise<{
   if (!service) {
     return { success: false, error: "Service not found" };
   }
+
+  const bookingConfig = await prisma.bookingConfig.findUnique({
+    where: { tenantId: service.tenantId },
+    select: { requireApproval: true },
+  });
+  const requireApproval = bookingConfig?.requireApproval ?? false;
 
   // Re-derive the valid slots on the server and require the requested time to
   // be one of them. This enforces availability, buffer, advance-notice and the
@@ -139,7 +146,7 @@ export async function createBooking(formData: FormData): Promise<{
             startTime,
             endTime,
             notes,
-            status: "CONFIRMED",
+            status: requireApproval ? "PENDING" : "CONFIRMED",
             cancelToken,
           },
         });
@@ -189,10 +196,14 @@ export async function createBooking(formData: FormData): Promise<{
     organizerEmail: service.tenant.owner?.email ?? FROM_EMAIL,
   };
 
-  // Send confirmation to client (non-blocking)
+  // Send confirmation to client (non-blocking). When approval is required the
+  // booking is only a request — skip the "confirmed" wording and the calendar
+  // invite until the owner confirms (the invite then goes out at confirm time).
   sendEmail({
     to: clientEmail.toLowerCase(),
-    subject: `Booking Confirmed - ${service.name} at ${service.tenant.businessName}`,
+    subject: requireApproval
+      ? `Booking Request Received - ${service.name} at ${service.tenant.businessName}`
+      : `Booking Confirmed - ${service.name} at ${service.tenant.businessName}`,
     html: bookingConfirmationEmail({
       businessName: service.tenant.businessName,
       primaryColor: service.tenant.primaryColor,
@@ -204,22 +215,27 @@ export async function createBooking(formData: FormData): Promise<{
       location: service.tenant.location,
       notes,
       cancellationUrl,
-      calendarUrl: googleCalendarUrl(calendarEvent),
+      pending: requireApproval,
+      calendarUrl: requireApproval ? undefined : googleCalendarUrl(calendarEvent),
     }),
-    attachments: [
-      {
-        filename: "invite.ics",
-        content: Buffer.from(buildEventIcs(calendarEvent), "utf-8"),
-        contentType: "text/calendar",
-      },
-    ],
+    attachments: requireApproval
+      ? undefined
+      : [
+          {
+            filename: "invite.ics",
+            content: Buffer.from(buildEventIcs(calendarEvent), "utf-8"),
+            contentType: "text/calendar",
+          },
+        ],
   }).catch(console.error);
 
   // Send notification to business owner (non-blocking)
   if (service.tenant.owner?.email) {
     sendEmail({
       to: service.tenant.owner.email,
-      subject: `New Booking: ${clientName} - ${service.name}`,
+      subject: requireApproval
+        ? `New booking request: ${clientName} - ${service.name}`
+        : `New Booking: ${clientName} - ${service.name}`,
       html: newBookingNotificationEmail({
         businessName: service.tenant.businessName,
         primaryColor: service.tenant.primaryColor,
@@ -237,5 +253,5 @@ export async function createBooking(formData: FormData): Promise<{
     }).catch(console.error);
   }
 
-  return { success: true, appointmentId };
+  return { success: true, appointmentId, pending: requireApproval };
 }

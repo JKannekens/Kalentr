@@ -65,6 +65,7 @@ interface BookingConfirmationProps extends BaseTemplateProps {
   notes?: string;
   cancellationUrl?: string;
   calendarUrl?: string;
+  pending?: boolean;
 }
 
 function locationRow(location?: string | null): string {
@@ -90,11 +91,18 @@ export function bookingConfirmationEmail({
   notes,
   cancellationUrl,
   calendarUrl,
+  pending,
 }: BookingConfirmationProps): string {
   const content = `
-    <h2 style="margin: 0 0 16px; color: #111827; font-size: 20px;">Booking Confirmed!</h2>
+    <h2 style="margin: 0 0 16px; color: #111827; font-size: 20px;">${
+      pending ? "Booking Request Received" : "Booking Confirmed!"
+    }</h2>
     <p style="margin: 0 0 24px; color: #4b5563; font-size: 16px; line-height: 1.5;">
-      Hi ${clientName}, your appointment has been confirmed.
+      ${
+        pending
+          ? `Hi ${clientName}, we&apos;ve received your request. You&apos;ll get a confirmation email once ${businessName || "the business"} approves it.`
+          : `Hi ${clientName}, your appointment has been confirmed.`
+      }
     </p>
     
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
