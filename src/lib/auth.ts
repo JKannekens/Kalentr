@@ -3,9 +3,14 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 class NotVerifiedError extends CredentialsSignin {
   code = "not_verified";
+}
+
+class RateLimitedError extends CredentialsSignin {
+  code = "rate_limited";
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -25,6 +30,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
+        }
+
+        // Throttle credential attempts per IP to blunt brute force / stuffing.
+        const { success } = await rateLimit(`login:${await getClientIp()}`, 10, 900);
+        if (!success) {
+          return Promise.reject(new RateLimitedError());
         }
 
         const user = await prisma.user.findUnique({

@@ -6,6 +6,7 @@ import { z } from "zod";
 import crypto from "crypto";
 import { sendEmail } from "@/lib/email";
 import { emailVerificationEmail } from "@/lib/email-templates";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const RegisterSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -23,6 +24,11 @@ export type RegisterResult = {
 };
 
 export async function register(formData: FormData): Promise<RegisterResult> {
+  const { success } = await rateLimit(`register:${await getClientIp()}`, 5, 3600);
+  if (!success) {
+    return { success: false, error: "Too many attempts. Please try again later." };
+  }
+
   const rawData = {
     name: formData.get("name") as string,
     email: formData.get("email") as string,

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { passwordResetEmail } from "@/lib/email-templates";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -11,6 +12,11 @@ const ForgotSchema = z.object({
 });
 
 export async function forgotPassword(formData: FormData) {
+  const { success } = await rateLimit(`forgot:${await getClientIp()}`, 5, 3600);
+  if (!success) {
+    return { success: false, error: "Too many attempts. Please try again later." };
+  }
+
   const raw = { email: formData.get("email") as string };
   const parsed = ForgotSchema.safeParse(raw);
 

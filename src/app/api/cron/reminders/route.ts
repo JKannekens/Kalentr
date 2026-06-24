@@ -17,7 +17,13 @@ export async function GET(request: NextRequest) {
   }
 
   const now = new Date();
-  
+
+  // Opportunistic cleanup of expired rate-limit rows (best effort).
+  await prisma.rateLimit
+    .deleteMany({ where: { expiresAt: { lt: now } } })
+    .catch(() => {});
+
+
   // Find appointments in the next 24 hours that haven't been reminded
   const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
   const in23Hours = new Date(now.getTime() + 23 * 60 * 60 * 1000);
