@@ -1,18 +1,22 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { sendEmail } from "@/lib/email";
 import {
   bookingConfirmationEmail,
   newBookingNotificationEmail,
 } from "@/lib/email-templates";
-import { generateSlots } from "@/lib/generate-slots";
+import { getOpenSlots } from "@/services/booking";
 import { formatTime } from "@/lib/format-time";
 import { z } from "zod";
 
+/** Sentinel used to abort the booking transaction when the slot is taken. */
+class SlotTakenError extends Error {}
+
 const BookingSchema = z.object({
   serviceId: z.string(),
-  date: z.string(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date"),
   time: z.string(),
   clientName: z.string().min(2),
   clientEmail: z.email(),
@@ -26,64 +30,21 @@ export async function getAvailableSlots(
   date: string
 ): Promise<{ slots: string[] }> {
   const service = await prisma.service.findFirst({
-    where: { id: serviceId, tenantId },
+    where: { id: serviceId, tenantId, isActive: true },
+    select: { duration: true },
   });
 
   if (!service) {
     return { slots: [] };
   }
 
-  const dateObj = new Date(date + "T00:00:00");
-  const dayOfWeek = dateObj.getDay();
-
-  // Get availability for this day
-  const availability = await prisma.availability.findMany({
-    where: {
-      tenantId,
-      dayOfWeek,
-      isActive: true,
-    },
-  });
-
-  if (availability.length === 0) {
-    return { slots: [] };
-  }
-
-  // Get booking config
-  const bookingConfig = await prisma.bookingConfig.findUnique({
-    where: { tenantId },
-  });
-
-  const slotDuration = bookingConfig?.slotDurationMinutes || 30;
-  const buffer = bookingConfig?.bufferMinutes || 0;
-
-  // Get existing appointments for this date
-  const startOfDay = new Date(date + "T00:00:00");
-  const endOfDay = new Date(date + "T23:59:59");
-
-  const existingAppointments = await prisma.appointment.findMany({
-    where: {
-      tenantId,
-      startTime: { gte: startOfDay },
-      endTime: { lte: endOfDay },
-      status: { notIn: ["CANCELLED"] },
-    },
-    select: {
-      startTime: true,
-      endTime: true,
-    },
-  });
-
-  const slots = generateSlots({
-    date,
-    availability,
-    existingAppointments,
+  const slots = await getOpenSlots({
+    tenantId,
     serviceDuration: service.duration,
-    slotDuration,
-    bufferMinutes: buffer,
+    date,
   });
 
-  return { slots };
+  return { slots: slots.map((s) => s.label) };
 }
 
 export async function createBooking(formData: FormData): Promise<{
@@ -110,77 +71,86 @@ export async function createBooking(formData: FormData): Promise<{
   const { serviceId, date, time, clientName, clientEmail, clientPhone, notes } =
     parsed.data;
 
-  // Get service and tenant
-  const service = await prisma.service.findUnique({
-    where: { id: serviceId },
-    include: { tenant: true },
+  // Only active services are bookable.
+  const service = await prisma.service.findFirst({
+    where: { id: serviceId, isActive: true },
+    include: { tenant: { include: { owner: true } } },
   });
 
   if (!service) {
     return { success: false, error: "Service not found" };
   }
 
-  // Parse time string (e.g., "9:00 AM" -> Date)
-  const [timePart, period] = time.split(" ");
-  const [hours, minutes] = timePart.split(":").map(Number);
-  let hour24 = hours;
-  if (period === "PM" && hours !== 12) hour24 += 12;
-  if (period === "AM" && hours === 12) hour24 = 0;
-
-  const startTime = new Date(date);
-  startTime.setHours(hour24, minutes, 0, 0);
-
-  const endTime = new Date(startTime);
-  endTime.setMinutes(endTime.getMinutes() + service.duration);
-
-  // Check for double booking
-  const conflict = await prisma.appointment.findFirst({
-    where: {
-      tenantId: service.tenantId,
-      status: { notIn: ["CANCELLED"] },
-      OR: [
-        {
-          AND: [
-            { startTime: { lte: startTime } },
-            { endTime: { gt: startTime } },
-          ],
-        },
-        {
-          AND: [
-            { startTime: { lt: endTime } },
-            { endTime: { gte: endTime } },
-          ],
-        },
-        {
-          AND: [
-            { startTime: { gte: startTime } },
-            { endTime: { lte: endTime } },
-          ],
-        },
-      ],
-    },
+  // Re-derive the valid slots on the server and require the requested time to
+  // be one of them. This enforces availability, buffer, advance-notice and the
+  // booking window — never trust the date/time the client submits.
+  const openSlots = await getOpenSlots({
+    tenantId: service.tenantId,
+    serviceDuration: service.duration,
+    date,
   });
+  const slot = openSlots.find((s) => s.label === time);
 
-  if (conflict) {
+  if (!slot) {
     return { success: false, error: "This time slot is no longer available" };
   }
 
-  // Create appointment
+  const startTime = slot.start;
+  const endTime = new Date(startTime);
+  endTime.setMinutes(endTime.getMinutes() + service.duration);
+
+  // Create inside a serializable transaction with a final conflict re-check so
+  // two concurrent requests for the same slot can't both succeed.
   const cancelToken = crypto.randomUUID();
-  const appointment = await prisma.appointment.create({
-    data: {
-      tenantId: service.tenantId,
-      serviceId,
-      clientName,
-      clientEmail: clientEmail.toLowerCase(),
-      clientPhone,
-      startTime,
-      endTime,
-      notes,
-      status: "CONFIRMED",
-      cancelToken,
-    },
-  });
+  let appointmentId: string;
+  try {
+    const appointment = await prisma.$transaction(
+      async (tx) => {
+        const conflict = await tx.appointment.findFirst({
+          where: {
+            tenantId: service.tenantId,
+            status: { notIn: ["CANCELLED"] },
+            startTime: { lt: endTime },
+            endTime: { gt: startTime },
+          },
+          select: { id: true },
+        });
+
+        if (conflict) {
+          throw new SlotTakenError();
+        }
+
+        return tx.appointment.create({
+          data: {
+            tenantId: service.tenantId,
+            serviceId,
+            clientName,
+            clientEmail: clientEmail.toLowerCase(),
+            clientPhone,
+            startTime,
+            endTime,
+            notes,
+            status: "CONFIRMED",
+            cancelToken,
+          },
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
+    appointmentId = appointment.id;
+  } catch (err) {
+    // Our explicit conflict, or a serialization failure (P2034) when a
+    // concurrent transaction won the slot — both mean "taken".
+    if (
+      err instanceof SlotTakenError ||
+      (err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2034")
+    ) {
+      return { success: false, error: "This time slot is no longer available" };
+    }
+    console.error("createBooking failed:", err);
+    return { success: false, error: "Something went wrong. Please try again." };
+  }
 
   // Send confirmation emails
   const formattedDate = startTime.toLocaleDateString("en-US", {
@@ -190,12 +160,6 @@ export async function createBooking(formData: FormData): Promise<{
     day: "numeric",
   });
   const formattedTime = formatTime(startTime, service.tenant.use24Hour);
-
-  // Get tenant owner for notification
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: service.tenantId },
-    include: { owner: true },
-  });
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const cancellationUrl = `${appUrl}/cancel/${cancelToken}`;
@@ -219,13 +183,13 @@ export async function createBooking(formData: FormData): Promise<{
   }).catch(console.error);
 
   // Send notification to business owner (non-blocking)
-  if (tenant?.owner?.email) {
+  if (service.tenant.owner?.email) {
     sendEmail({
-      to: tenant.owner.email,
+      to: service.tenant.owner.email,
       subject: `New Booking: ${clientName} - ${service.name}`,
       html: newBookingNotificationEmail({
-        businessName: tenant.businessName,
-        primaryColor: tenant.primaryColor,
+        businessName: service.tenant.businessName,
+        primaryColor: service.tenant.primaryColor,
         clientName,
         clientEmail: clientEmail.toLowerCase(),
         clientPhone,
@@ -234,11 +198,11 @@ export async function createBooking(formData: FormData): Promise<{
         time: formattedTime,
         duration: service.duration,
         notes,
-        dashboardUrl: `${process.env.AUTH_URL || "http://localhost:3000"}/dashboard/appointments`,
+        dashboardUrl: `${process.env.AUTH_URL || appUrl}/dashboard/appointments`,
       }),
       replyTo: clientEmail.toLowerCase(),
     }).catch(console.error);
   }
 
-  return { success: true, appointmentId: appointment.id };
+  return { success: true, appointmentId };
 }
