@@ -9,6 +9,7 @@ import {
 } from "@/lib/email-templates";
 import { getOpenSlots } from "@/services/booking";
 import { formatTime } from "@/lib/format-time";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { z } from "zod";
 
 /** Sentinel used to abort the booking transaction when the slot is taken. */
@@ -53,6 +54,11 @@ export async function createBooking(formData: FormData): Promise<{
   error?: string;
   appointmentId?: string;
 }> {
+  const limit = await rateLimit(`booking:${await getClientIp()}`, 10, 3600);
+  if (!limit.success) {
+    return { success: false, error: "Too many booking attempts. Please try again later." };
+  }
+
   const rawData = {
     serviceId: formData.get("serviceId") as string,
     date: formData.get("date") as string,

@@ -27,7 +27,9 @@ export default function LoginPage() {
         setError(
           result.code === "not_verified"
             ? "Please verify your email before logging in."
-            : "Invalid email or password."
+            : result.code === "rate_limited"
+              ? "Too many attempts. Please try again later."
+              : "Invalid email or password."
         );
       } else {
         router.push("/dashboard");
