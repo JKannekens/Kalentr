@@ -15,16 +15,17 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
       endTime: true,
       status: true,
       service: { select: { name: true, duration: true } },
-      tenant: { select: { businessName: true, primaryColor: true, use24Hour: true } },
+      tenant: { select: { businessName: true, primaryColor: true, use24Hour: true, timezone: true } },
     },
   });
 
   if (!appointment) notFound();
 
+  const tz = appointment.tenant.timezone;
   const formattedDate = appointment.startTime.toLocaleDateString("en-US", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric",
+    weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: tz,
   });
-  const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour);
+  const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour, tz);
   const hoursUntil = (appointment.startTime.getTime() - Date.now()) / 3_600_000;
 
   return (

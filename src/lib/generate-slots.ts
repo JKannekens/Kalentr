@@ -1,3 +1,5 @@
+import { zonedTimeToUtc } from "@/lib/timezone";
+
 export interface AvailabilityWindow {
   startTime: string; // "HH:MM"
   endTime: string;   // "HH:MM"
@@ -16,6 +18,7 @@ export interface GenerateSlotsInput {
   slotDuration: number;    // minutes — step between slot starts
   bufferMinutes: number;
   now?: Date;              // injectable for testing
+  timeZone?: string;       // IANA zone the wall-clock times belong to
 }
 
 export interface SlotInstant {
@@ -25,7 +28,15 @@ export interface SlotInstant {
   start: Date;
 }
 
-function buildStart(date: string, hours: number, minutes: number): Date {
+function buildStart(
+  date: string,
+  hours: number,
+  minutes: number,
+  timeZone?: string
+): Date {
+  if (timeZone) {
+    return zonedTimeToUtc(date, hours, minutes, timeZone);
+  }
   const start = new Date(date);
   start.setHours(hours, minutes, 0, 0);
   return start;
@@ -50,6 +61,7 @@ export function generateSlotInstants({
   slotDuration,
   bufferMinutes,
   now = new Date(),
+  timeZone,
 }: GenerateSlotsInput): SlotInstant[] {
   const slots: SlotInstant[] = [];
 
@@ -63,7 +75,7 @@ export function generateSlotInstants({
     while (current + serviceDuration <= end) {
       const hours = Math.floor(current / 60);
       const minutes = current % 60;
-      const slotStart = buildStart(date, hours, minutes);
+      const slotStart = buildStart(date, hours, minutes, timeZone);
 
       const slotEnd = new Date(slotStart);
       slotEnd.setMinutes(slotEnd.getMinutes() + serviceDuration);

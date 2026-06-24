@@ -39,10 +39,11 @@ export async function cancelByToken(token: string): Promise<{ success: boolean; 
     },
   });
 
+  const tz = appointment.tenant.timezone;
   const formattedDate = appointment.startTime.toLocaleDateString("en-US", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric",
+    weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: tz,
   });
-  const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour);
+  const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour, tz);
 
   sendEmail({
     to: appointment.clientEmail,

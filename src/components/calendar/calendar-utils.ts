@@ -1,5 +1,6 @@
 import type { Appointment, Service, TimeOff } from "@prisma/client";
 import { formatClock, formatTime as formatTimeShared } from "@/lib/format-time";
+import { todayInTimeZone } from "@/lib/timezone";
 
 export type AppointmentWithService = Appointment & { service: Service };
 export type CalendarView = "month" | "week" | "day";
@@ -55,11 +56,24 @@ export function formatHour(h: number, use24Hour = false): string {
   return formatClock(h, 0, use24Hour);
 }
 
-export function formatTime(date: Date, use24Hour = false): string {
-  return formatTimeShared(date, use24Hour);
+export function formatTime(
+  date: Date,
+  use24Hour = false,
+  timeZone?: string,
+): string {
+  return formatTimeShared(date, use24Hour, timeZone);
 }
 
-export function isTodayDate(year: number, month: number, day: number): boolean {
+export function isTodayDate(
+  year: number,
+  month: number,
+  day: number,
+  timeZone?: string,
+): boolean {
+  if (timeZone) {
+    const t = todayInTimeZone(timeZone);
+    return day === t.day && month === t.month - 1 && year === t.year;
+  }
   const t = new Date();
   return (
     day === t.getDate() && month === t.getMonth() && year === t.getFullYear()

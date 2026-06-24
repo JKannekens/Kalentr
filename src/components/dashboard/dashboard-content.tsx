@@ -31,6 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
 export function DashboardContent({
   appointments,
   services,
+  timezone = "UTC",
   use24Hour,
   timeOff,
 }: DashboardContentProps) {
@@ -119,6 +120,7 @@ export function DashboardContent({
             onDateSelect={setSelectedDate}
             onAppointmentClick={openPopover}
             use24Hour={use24Hour}
+            timeZone={timezone}
             timeOff={timeOff}
           />
         </div>
@@ -159,13 +161,14 @@ export function DashboardContent({
           </div>
 
           <p className="text-gray-500 dark:text-gray-400 mb-3">
-            {formatTime(new Date(popover.appointment.startTime), use24Hour)} –{" "}
-            {formatTime(new Date(popover.appointment.endTime), use24Hour)},{" "}
+            {formatTime(new Date(popover.appointment.startTime), use24Hour, timezone)} –{" "}
+            {formatTime(new Date(popover.appointment.endTime), use24Hour, timezone)},{" "}
             {new Intl.DateTimeFormat("en-US", {
               weekday: "short",
               month: "short",
               day: "numeric",
               year: "numeric",
+              timeZone: timezone,
             }).format(new Date(popover.appointment.startTime))}
           </p>
 

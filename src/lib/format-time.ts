@@ -22,8 +22,20 @@ export function formatClock(
 export function formatTime(
   value: Date | string,
   use24Hour: boolean = false,
+  timeZone?: string,
 ): string {
   if (value instanceof Date) {
+    if (timeZone) {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone,
+        hourCycle: "h23",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).formatToParts(value);
+      const map: Record<string, string> = {};
+      for (const p of parts) if (p.type !== "literal") map[p.type] = p.value;
+      return formatClock(Number(map.hour), Number(map.minute), use24Hour);
+    }
     return formatClock(value.getHours(), value.getMinutes(), use24Hour);
   }
 

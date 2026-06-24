@@ -46,8 +46,9 @@ export async function updateAppointmentStatus(
       year: "numeric",
       month: "long",
       day: "numeric",
+      timeZone: tenant.timezone,
     });
-    const time = formatTime(appointment.startTime, tenant.use24Hour);
+    const time = formatTime(appointment.startTime, tenant.use24Hour, tenant.timezone);
 
     sendEmail({
       to: appointment.clientEmail,

@@ -54,8 +54,13 @@ export async function GET(request: NextRequest) {
         year: "numeric",
         month: "long",
         day: "numeric",
+        timeZone: appointment.tenant.timezone,
       });
-      const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour);
+      const formattedTime = formatTime(
+        appointment.startTime,
+        appointment.tenant.use24Hour,
+        appointment.tenant.timezone
+      );
 
       const emailResult = await sendEmail({
         to: appointment.clientEmail,
