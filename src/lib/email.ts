@@ -22,9 +22,16 @@ interface SendEmailOptions {
   subject: string;
   html: string;
   replyTo?: string;
+  attachments?: EmailAttachment[];
 }
 
-export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions) {
+interface EmailAttachment {
+  filename: string;
+  content: Buffer | string;
+  contentType?: string;
+}
+
+export async function sendEmail({ to, subject, html, replyTo, attachments }: SendEmailOptions) {
   // Skip if no API key (dev mode without email configured)
   if (!process.env.RESEND_API_KEY) {
     console.log('[Email] Skipping email (no RESEND_API_KEY):', { to, subject });
@@ -38,6 +45,7 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions
       subject,
       html,
       replyTo,
+      attachments,
     });
 
     if (error) {
