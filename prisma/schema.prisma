@@ -90,8 +90,10 @@ model Tenant {
   businessName String
   description  String?
   logo         String?
+  location     String?
   primaryColor String  @default("#3b82f6")
   timezone     String  @default("UTC")
+  use24Hour    Boolean @default(false)
 
   // Owner relationship
   ownerId String @unique

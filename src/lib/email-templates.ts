@@ -61,8 +61,20 @@ interface BookingConfirmationProps extends BaseTemplateProps {
   date: string; // Formatted date string
   time: string; // Formatted time string
   duration: number; // minutes
+  location?: string | null;
   notes?: string;
   cancellationUrl?: string;
+}
+
+function locationRow(location?: string | null): string {
+  if (!location) return "";
+  return `
+            <tr>
+              <td style="padding: 8px 0;">
+                <span style="color: #6b7280; font-size: 14px;">Location</span><br>
+                <span style="color: #111827; font-size: 16px; font-weight: 500;">${location}</span>
+              </td>
+            </tr>`;
 }
 
 export function bookingConfirmationEmail({
@@ -73,6 +85,7 @@ export function bookingConfirmationEmail({
   date,
   time,
   duration,
+  location,
   notes,
   cancellationUrl,
 }: BookingConfirmationProps): string {
@@ -104,6 +117,7 @@ export function bookingConfirmationEmail({
                 <span style="color: #111827; font-size: 16px; font-weight: 500;">${time} (${duration} minutes)</span>
               </td>
             </tr>
+            ${locationRow(location)}
             ${
               notes
                 ? `
@@ -245,6 +259,7 @@ interface AppointmentReminderProps extends BaseTemplateProps {
   date: string;
   time: string;
   duration: number;
+  location?: string | null;
   hoursUntil: number;
   cancellationUrl?: string;
 }
@@ -257,6 +272,7 @@ export function appointmentReminderEmail({
   date,
   time,
   duration,
+  location,
   hoursUntil,
   cancellationUrl,
 }: AppointmentReminderProps): string {
@@ -288,11 +304,12 @@ export function appointmentReminderEmail({
                 <span style="color: #111827; font-size: 16px; font-weight: 500;">${time} (${duration} minutes)</span>
               </td>
             </tr>
+            ${locationRow(location)}
           </table>
         </td>
       </tr>
     </table>
-    
+
     <p style="margin: 0; color: #4b5563; font-size: 14px;">
       We look forward to seeing you!
     </p>

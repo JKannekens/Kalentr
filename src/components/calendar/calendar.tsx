@@ -23,6 +23,7 @@ interface MonthCalendarProps {
     appointment: AppointmentWithService,
     anchorRect: DOMRect,
   ) => void;
+  use24Hour: boolean;
   timeOff: TimeOff[];
 }
 
@@ -31,6 +32,7 @@ export function Calendar({
   selectedDate,
   onDateSelect,
   onAppointmentClick,
+  use24Hour,
   timeOff,
 }: MonthCalendarProps) {
   const [view, setView] = useState<CalendarView>("month");
@@ -170,6 +172,7 @@ export function Calendar({
           selectedDate={selectedDate}
           onSelectDay={selectDay}
           onAppointmentClick={onAppointmentClick}
+          use24Hour={use24Hour}
           timeOff={timeOff}
         />
       )}
@@ -179,6 +182,7 @@ export function Calendar({
           appointments={dayAppts}
           currentDate={currentDate}
           onAppointmentClick={onAppointmentClick}
+          use24Hour={use24Hour}
           timeOff={timeOff}
         />
       )}

@@ -2,23 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  CalendarDays,
-  Briefcase,
-  Clock,
-  Settings,
-  CreditCard,
-} from "lucide-react";
-
-const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/appointments", label: "Appointments", icon: CalendarDays },
-  { href: "/dashboard/services", label: "Services", icon: Briefcase },
-  { href: "/dashboard/availability", label: "Availability", icon: Clock },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
-];
+import { navItems, isNavItemActive } from "./nav-items";
 
 export function DashboardNav() {
   const pathname = usePathname();
@@ -27,8 +11,9 @@ export function DashboardNav() {
 
   return (
     <nav className="hidden md:flex items-center gap-0.5">
-      {navItems.map(({ href, label, icon: Icon, exact }) => {
-        const isActive = exact ? pathname === href : pathname.startsWith(href);
+      {navItems.map((item) => {
+        const { href, label, icon: Icon } = item;
+        const isActive = isNavItemActive(item, pathname);
         return (
           <Link
             key={href}

@@ -33,7 +33,7 @@ export default async function AppointmentsPage() {
           <h2 className="text-base font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">
             Upcoming · {upcoming.length}
           </h2>
-          <AppointmentList appointments={upcoming} type="upcoming" />
+          <AppointmentList appointments={upcoming} type="upcoming" use24Hour={tenant.use24Hour} />
         </section>
 
         {past.length > 0 && (
@@ -41,7 +41,7 @@ export default async function AppointmentsPage() {
             <h2 className="text-base font-semibold mb-3 text-muted-foreground uppercase tracking-wide text-xs">
               Past · {past.length}
             </h2>
-            <AppointmentList appointments={past} type="past" />
+            <AppointmentList appointments={past} type="past" use24Hour={tenant.use24Hour} />
           </section>
         )}
       </div>

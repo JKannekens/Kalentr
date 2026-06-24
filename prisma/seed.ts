@@ -41,8 +41,10 @@ async function main() {
       businessName: "Alex Morgan Design",
       description:
         "Freelance UI/UX designer and web developer. I help startups and small businesses craft beautiful, user-friendly digital products.",
+      location: "Keizersgracht 123, Amsterdam",
       primaryColor: "#6366f1",
       timezone: "Europe/Amsterdam",
+      use24Hour: true,
       ownerId: user.id,
       subscriptionStatus: "trialing",
       trialEndsAt,
@@ -127,12 +129,18 @@ async function main() {
     ),
   );
 
-  // Time off: a week's holiday in the near future
+  // Time off: a week's holiday roughly three weeks out (relative to today)
+  const holidayStart = new Date();
+  holidayStart.setDate(holidayStart.getDate() + 21);
+  holidayStart.setHours(0, 0, 0, 0);
+  const holidayEnd = new Date(holidayStart);
+  holidayEnd.setDate(holidayEnd.getDate() + 4);
+  holidayEnd.setHours(23, 59, 59, 0);
   await prisma.timeOff.create({
     data: {
       tenantId: tenant.id,
-      startDate: new Date("2026-04-14T00:00:00.000Z"),
-      endDate: new Date("2026-04-18T23:59:59.000Z"),
+      startDate: holidayStart,
+      endDate: holidayEnd,
       label: "Spring Holiday",
     },
   });
@@ -254,13 +262,29 @@ async function main() {
     },
   ];
 
-  const today = new Date("2026-04-07T00:00:00.000Z");
+  // Anchor everything to the real current date so the seed always produces
+  // a fresh mix of past and upcoming appointments around "now".
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Keep appointments on weekdays so they fall inside the Mon–Fri availability.
+  function snapToWeekday(date: Date): Date {
+    const d = new Date(date);
+    if (d.getDay() === 6) d.setDate(d.getDate() + 2); // Sat → Mon
+    else if (d.getDay() === 0) d.setDate(d.getDate() + 1); // Sun → Mon
+    return d;
+  }
 
   await Promise.all(
     appointmentData.map(async (appt) => {
       const service = services[appt.serviceIndex];
-      const start = new Date(today);
-      start.setDate(start.getDate() + appt.startOffset);
+      const start = snapToWeekday(
+        (() => {
+          const d = new Date(today);
+          d.setDate(d.getDate() + appt.startOffset);
+          return d;
+        })(),
+      );
       start.setHours(appt.startHour, 0, 0, 0);
 
       const end = new Date(start);

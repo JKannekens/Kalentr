@@ -77,80 +77,80 @@ export default function HomePage() {
                     <span className="text-xs text-gray-400">yourname.kalentr.com</span>
                   </div>
                 </div>
-                {/* Mock booking page content */}
+                {/* Mock booking page content — mirrors the real client site */}
                 <div className="p-6 sm:p-8 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/30 dark:to-gray-900">
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    {/* Left: profile */}
-                    <div>
-                      <div className="flex items-center gap-3 mb-5">
-                        <div className="h-12 w-12 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                  <div className="grid gap-6 sm:grid-cols-5">
+                    {/* Left: profile + services */}
+                    <div className="sm:col-span-3">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="h-12 w-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-sm">
                           AM
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900 dark:text-white">Alex Morgan Design</p>
-                          <p className="text-xs text-gray-500">UI/UX Designer & Strategist</p>
+                          <p className="text-xs text-gray-500">Book an appointment online</p>
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
                         I help startups and small businesses craft beautiful, user-friendly digital products.
                       </p>
+                      <div className="mb-3">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Services</p>
+                        <p className="text-xs text-gray-500">Pick a service to choose a date and time.</p>
+                      </div>
                       <div className="space-y-3">
                         {[
-                          { name: "Design Consultation", duration: "30 min", price: "€50" },
-                          { name: "UX Audit", duration: "90 min", price: "€150" },
-                          { name: "Website Strategy", duration: "60 min", price: "€100" },
+                          { name: "Design Consultation", meta: "30 min · Consultation", price: "$50" },
+                          { name: "UX Audit", meta: "90 min · Audit", price: "$150" },
+                          { name: "Website Strategy", meta: "60 min · Strategy", price: "$100" },
                         ].map((s) => (
-                          <div key={s.name} className="flex items-center justify-between rounded-xl border border-indigo-100 dark:border-indigo-900 bg-white dark:bg-gray-800 p-3.5 shadow-sm">
-                            <div>
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">{s.name}</p>
-                              <p className="text-xs text-gray-400">{s.duration}</p>
+                          <div key={s.name} className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800 p-3.5 shadow-sm">
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{s.name}</p>
+                              <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-gray-400">
+                                <Clock className="h-3 w-3" />
+                                {s.meta}
+                              </p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-indigo-600">{s.price}</span>
-                              <div className="rounded-lg bg-indigo-500 px-2.5 py-1 text-xs font-medium text-white">Book</div>
+                            <div className="flex shrink-0 items-center gap-2.5">
+                              <span className="text-sm font-semibold text-indigo-600">{s.price}</span>
+                              <span className="rounded-lg bg-indigo-500 px-3 py-1 text-xs font-medium text-white shadow-sm">Book</span>
                             </div>
                           </div>
                         ))}
                       </div>
                     </div>
-                    {/* Right: calendar mock */}
-                    <div className="hidden sm:block">
-                      <div className="rounded-xl border border-indigo-100 dark:border-indigo-900 bg-white dark:bg-gray-800 p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-3">
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">June 2026</p>
-                          <div className="flex gap-1">
-                            <div className="h-6 w-6 rounded bg-gray-100 dark:bg-gray-700" />
-                            <div className="h-6 w-6 rounded bg-gray-100 dark:bg-gray-700" />
-                          </div>
+                    {/* Right: opening hours */}
+                    <div className="hidden sm:block sm:col-span-2">
+                      <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-800/40 p-5">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">Opening hours</p>
                         </div>
-                        <div className="grid grid-cols-7 gap-1 mb-2">
-                          {["M","T","W","T","F","S","S"].map((d, i) => (
-                            <div key={i} className="text-center text-xs text-gray-400 font-medium py-1">{d}</div>
-                          ))}
-                        </div>
-                        <div className="grid grid-cols-7 gap-1">
-                          {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
-                            <div
-                              key={d}
-                              className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium cursor-pointer transition-colors ${
-                                d === 12 ? "bg-indigo-500 text-white" :
-                                [15,16,19,22,23,26].includes(d) ? "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100" :
-                                "text-gray-300 dark:text-gray-600"
-                              }`}
-                            >
-                              {d}
+                        <div className="space-y-2">
+                          {[
+                            { day: "Monday", hours: "9:00 AM – 5:00 PM" },
+                            { day: "Tuesday", hours: "9:00 AM – 5:00 PM" },
+                            { day: "Wednesday", hours: "9:00 AM – 5:00 PM" },
+                            { day: "Thursday", hours: "9:00 AM – 5:00 PM" },
+                            { day: "Friday", hours: "9:00 AM – 5:00 PM" },
+                            { day: "Saturday", hours: null },
+                            { day: "Sunday", hours: null },
+                          ].map((d) => (
+                            <div key={d.day} className="flex items-baseline justify-between gap-3 text-sm">
+                              <span className="text-gray-500">{d.day}</span>
+                              <span className={d.hours ? "font-medium text-gray-900 dark:text-white" : "text-gray-400"}>
+                                {d.hours ?? "Closed"}
+                              </span>
                             </div>
                           ))}
                         </div>
-                        <div className="mt-3 space-y-1.5">
-                          <p className="text-xs text-gray-500 font-medium mb-2">Available slots</p>
-                          {["9:00 AM", "11:00 AM", "2:00 PM", "4:00 PM"].map((t) => (
-                            <div key={t} className="flex items-center justify-between rounded-lg bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5">
-                              <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300">{t}</span>
-                              <span className="text-xs text-indigo-400">Available</span>
-                            </div>
-                          ))}
+                        <div className="mt-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 text-xs font-medium text-indigo-600 dark:text-indigo-300">
+                          Next available · Today
                         </div>
+                        <p className="mt-4 text-xs leading-relaxed text-gray-400">
+                          Choose a service to see open time slots and book.
+                        </p>
                       </div>
                     </div>
                   </div>

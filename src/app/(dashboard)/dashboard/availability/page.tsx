@@ -40,7 +40,7 @@ export default async function AvailabilityPage() {
         <p className="mt-0.5 text-sm text-muted-foreground">Set your weekly schedule for when clients can book</p>
       </div>
 
-      <AvailabilityForm initialAvailability={availabilityMap} />
+      <AvailabilityForm initialAvailability={availabilityMap} use24Hour={tenant.use24Hour} />
 
       <div>
         <h2 className="text-lg font-semibold mb-0.5">Time off & holidays</h2>

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { appointmentStatusChangeEmail } from "@/lib/email-templates";
+import { formatTime } from "@/lib/format-time";
 
 export async function cancelByToken(token: string): Promise<{ success: boolean; error?: string }> {
   const appointment = await prisma.appointment.findUnique({
@@ -41,9 +42,7 @@ export async function cancelByToken(token: string): Promise<{ success: boolean; 
   const formattedDate = appointment.startTime.toLocaleDateString("en-US", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
-  const formattedTime = appointment.startTime.toLocaleTimeString("en-US", {
-    hour: "numeric", minute: "2-digit", hour12: true,
-  });
+  const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour);
 
   sendEmail({
     to: appointment.clientEmail,

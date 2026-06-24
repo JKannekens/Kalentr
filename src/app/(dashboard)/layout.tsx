@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/ui/LogoutButton";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { DashboardMobileNav } from "@/components/dashboard/dashboard-mobile-nav";
 import { UpgradeWall } from "@/components/dashboard/upgrade-wall";
 import { prisma } from "@/lib/prisma";
 import { isSubscriptionActive } from "@/lib/stripe";
@@ -30,7 +31,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <nav className="sticky top-0 z-40 border-b border-border/60 bg-card/80 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between gap-4">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
+              <DashboardMobileNav
+                email={session.user.email}
+                trialDaysLeft={tenant?.subscriptionStatus === "trialing" ? daysLeft : undefined}
+              />
               <Link
                 href="/dashboard"
                 className="flex items-center gap-2 text-lg font-semibold tracking-tight hover:opacity-80 transition-opacity shrink-0"

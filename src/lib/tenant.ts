@@ -9,8 +9,10 @@ export type TenantInfo = {
   businessName: string;
   description: string | null;
   logo: string | null;
+  location: string | null;
   primaryColor: string;
   timezone: string;
+  use24Hour: boolean;
 };
 
 /**
@@ -46,8 +48,10 @@ export const getTenant = cache(async (
       businessName: true,
       description: true,
       logo: true,
+      location: true,
       primaryColor: true,
       timezone: true,
+      use24Hour: true,
     },
   });
   
@@ -69,8 +73,10 @@ export const getTenantByOwner = cache(async (
       businessName: true,
       description: true,
       logo: true,
+      location: true,
       primaryColor: true,
       timezone: true,
+      use24Hour: true,
     },
   });
   

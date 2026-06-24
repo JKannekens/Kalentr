@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { AppointmentStatus } from "@prisma/client";
 import { sendEmail } from "@/lib/email";
 import { appointmentStatusChangeEmail } from "@/lib/email-templates";
+import { formatTime } from "@/lib/format-time";
 
 export async function updateAppointmentStatus(
   appointmentId: string,
@@ -46,11 +47,7 @@ export async function updateAppointmentStatus(
       month: "long",
       day: "numeric",
     });
-    const time = appointment.startTime.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+    const time = formatTime(appointment.startTime, tenant.use24Hour);
 
     sendEmail({
       to: appointment.clientEmail,

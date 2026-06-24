@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { appointmentReminderEmail } from "@/lib/email-templates";
+import { formatTime } from "@/lib/format-time";
 
 // This endpoint should be called by a cron job (e.g., Vercel Cron, Railway Cron)
 // Run every hour: 0 * * * *
@@ -54,11 +55,7 @@ export async function GET(request: NextRequest) {
         month: "long",
         day: "numeric",
       });
-      const formattedTime = appointment.startTime.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
+      const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour);
 
       const emailResult = await sendEmail({
         to: appointment.clientEmail,
@@ -71,6 +68,7 @@ export async function GET(request: NextRequest) {
           date: formattedDate,
           time: formattedTime,
           duration: appointment.service.duration,
+          location: appointment.tenant.location,
           hoursUntil: 24,
         }),
       });

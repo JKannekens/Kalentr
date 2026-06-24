@@ -18,6 +18,7 @@ export interface DayViewProps {
     appointment: AppointmentWithService,
     anchorRect: DOMRect,
   ) => void;
+  use24Hour: boolean;
   timeOff: TimeOff[];
 }
 
@@ -25,6 +26,7 @@ export function DayView({
   appointments,
   currentDate,
   onAppointmentClick,
+  use24Hour,
   timeOff,
 }: DayViewProps) {
   const hours = Array.from(
@@ -57,7 +59,7 @@ export function DayView({
               className="flex min-h-14 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
             >
               <div className="w-20 shrink-0 px-3 pt-2.5 text-xs text-gray-400 dark:text-gray-500">
-                {formatHour(hour)}
+                {formatHour(hour, use24Hour)}
               </div>
               <div className="flex-1 space-y-1 border-l border-gray-100 dark:border-gray-800 px-2 py-1">
                 {slotAppts.map((app) => (
@@ -74,8 +76,8 @@ export function DayView({
                   >
                     <p className="font-semibold">{app.service.name}</p>
                     <p className="opacity-75">
-                      {formatTime(new Date(app.startTime))} –{" "}
-                      {formatTime(new Date(app.endTime))} · {app.clientName}
+                      {formatTime(new Date(app.startTime), use24Hour)} –{" "}
+                      {formatTime(new Date(app.endTime), use24Hour)} · {app.clientName}
                     </p>
                   </button>
                 ))}

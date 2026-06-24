@@ -7,7 +7,8 @@
       "Bash(npm run:*)",
       "Bash(npx shadcn@latest add dialog --yes)",
       "Bash(npx shadcn@latest add dialog --overwrite)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(grep -o \"DATABASE_URL=.\\\\{0,15\\\\}\" .env .env.local)"
     ]
   }
 }
