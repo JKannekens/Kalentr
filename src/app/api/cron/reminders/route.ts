@@ -8,11 +8,13 @@ import { formatTime } from "@/lib/format-time";
 // Run every hour: 0 * * * *
 
 export async function GET(request: NextRequest) {
-  // Verify cron secret to prevent unauthorized access
-  const authHeader = request.headers.get("authorization");
+  // Fail closed: without a configured secret, nobody may run this job.
   const cronSecret = process.env.CRON_SECRET;
-  
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    console.error("CRON_SECRET is not set; refusing to run the reminders job.");
+    return NextResponse.json({ error: "Cron is not configured" }, { status: 500 });
+  }
+  if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -48,7 +50,6 @@ export async function GET(request: NextRequest) {
     processed: 0,
     sent: 0,
     failed: 0,
-    errors: [] as string[],
   };
 
   for (const appointment of upcomingAppointments) {
@@ -93,11 +94,11 @@ export async function GET(request: NextRequest) {
         results.sent++;
       } else {
         results.failed++;
-        results.errors.push(`Failed for ${appointment.id}: ${JSON.stringify(emailResult.error)}`);
+        console.error(`Reminder failed for ${appointment.id}:`, emailResult.error);
       }
     } catch (error) {
       results.failed++;
-      results.errors.push(`Error for ${appointment.id}: ${error}`);
+      console.error(`Reminder error for ${appointment.id}:`, error);
     }
   }
 
