@@ -16,7 +16,15 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
       endTime: true,
       status: true,
       service: { select: { name: true, duration: true } },
-      tenant: { select: { businessName: true, primaryColor: true, use24Hour: true, timezone: true } },
+      tenant: {
+        select: {
+          businessName: true,
+          primaryColor: true,
+          use24Hour: true,
+          timezone: true,
+          bookingConfig: { select: { cancellationNoticeHours: true } },
+        },
+      },
     },
   });
 
@@ -27,7 +35,9 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
     weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: tz,
   });
   const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour, tz);
+  const noticeHours = appointment.tenant.bookingConfig?.cancellationNoticeHours ?? 1;
   const hoursLeft = hoursUntil(appointment.startTime);
+  const tooLate = noticeHours > 0 && hoursLeft < noticeHours;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -40,7 +50,8 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
         primaryColor={appointment.tenant.primaryColor}
         date={formattedDate}
         time={formattedTime}
-        tooLate={hoursLeft < 1}
+        tooLate={tooLate}
+        noticeHours={noticeHours}
       />
     </div>
   );

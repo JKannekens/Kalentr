@@ -50,11 +50,12 @@ export async function updateBookingConfig(formData: FormData) {
   const maxAdvanceDays = Number(formData.get("maxAdvanceDays")) || 30;
   const bufferMinutes = Number(formData.get("bufferMinutes")) || 0;
   const requireApproval = formData.get("requireApproval") === "on";
+  const cancellationNoticeHours = Math.max(0, Number(formData.get("cancellationNoticeHours")) || 0);
 
   await prisma.bookingConfig.upsert({
     where: { tenantId: tenant.id },
-    create: { tenantId: tenant.id, minAdvanceHours, maxAdvanceDays, bufferMinutes, requireApproval },
-    update: { minAdvanceHours, maxAdvanceDays, bufferMinutes, requireApproval },
+    create: { tenantId: tenant.id, minAdvanceHours, maxAdvanceDays, bufferMinutes, requireApproval, cancellationNoticeHours },
+    update: { minAdvanceHours, maxAdvanceDays, bufferMinutes, requireApproval, cancellationNoticeHours },
   });
 
   revalidatePath("/dashboard/settings");

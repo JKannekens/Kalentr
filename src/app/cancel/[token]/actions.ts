@@ -8,7 +8,7 @@ import { formatTime } from "@/lib/format-time";
 export async function cancelByToken(token: string): Promise<{ success: boolean; error?: string }> {
   const appointment = await prisma.appointment.findUnique({
     where: { cancelToken: token },
-    include: { service: true, tenant: true },
+    include: { service: true, tenant: { include: { bookingConfig: true } } },
   });
 
   if (!appointment) {
@@ -23,10 +23,14 @@ export async function cancelByToken(token: string): Promise<{ success: boolean; 
     return { success: false, error: "Completed appointments cannot be cancelled." };
   }
 
-  // Block cancellation within 1 hour of start
+  // Block cancellation within the configured notice window.
+  const noticeHours = appointment.tenant.bookingConfig?.cancellationNoticeHours ?? 1;
   const hoursUntil = (appointment.startTime.getTime() - Date.now()) / 3_600_000;
-  if (hoursUntil < 1) {
-    return { success: false, error: "Appointments cannot be cancelled less than 1 hour before the start time." };
+  if (noticeHours > 0 && hoursUntil < noticeHours) {
+    return {
+      success: false,
+      error: `Appointments cannot be cancelled less than ${noticeHours} hour${noticeHours === 1 ? "" : "s"} before the start time.`,
+    };
   }
 
   await prisma.appointment.update({
