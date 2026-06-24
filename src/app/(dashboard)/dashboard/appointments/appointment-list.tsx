@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { updateAppointmentStatus } from "./actions";
 import { CalendarDays, Mail, Phone, MessageSquare } from "lucide-react";
 import { formatTime } from "@/lib/format-time";
+import { getZonedParts } from "@/lib/timezone";
 import type { Appointment, Service, AppointmentStatus } from "@prisma/client";
 
 type AppointmentWithService = Appointment & { service: Service };
@@ -17,7 +18,7 @@ const STATUS_STYLES: Record<AppointmentStatus, { label: string; className: strin
   NO_SHOW:   { label: "No show",   className: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" },
 };
 
-export function AppointmentList({ appointments, type, use24Hour }: { appointments: AppointmentWithService[]; type: "upcoming" | "past"; use24Hour: boolean }) {
+export function AppointmentList({ appointments, type, use24Hour, timeZone }: { appointments: AppointmentWithService[]; type: "upcoming" | "past"; use24Hour: boolean; timeZone: string }) {
   if (appointments.length === 0) {
     return (
       <div className="rounded-xl border bg-card p-10 text-center">
@@ -32,13 +33,13 @@ export function AppointmentList({ appointments, type, use24Hour }: { appointment
   return (
     <div className="space-y-3">
       {appointments.map((a) => (
-        <AppointmentCard key={a.id} appointment={a} showActions={type === "upcoming"} use24Hour={use24Hour} />
+        <AppointmentCard key={a.id} appointment={a} showActions={type === "upcoming"} use24Hour={use24Hour} timeZone={timeZone} />
       ))}
     </div>
   );
 }
 
-function AppointmentCard({ appointment, showActions, use24Hour }: { appointment: AppointmentWithService; showActions: boolean; use24Hour: boolean }) {
+function AppointmentCard({ appointment, showActions, use24Hour, timeZone }: { appointment: AppointmentWithService; showActions: boolean; use24Hour: boolean; timeZone: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,13 +72,13 @@ function AppointmentCard({ appointment, showActions, use24Hour }: { appointment:
         {/* Date column */}
         <div className="hidden sm:flex flex-col items-center justify-center w-20 shrink-0 bg-muted/50 border-r py-5 px-2 text-center">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            {start.toLocaleDateString("en-US", { month: "short" })}
+            {start.toLocaleDateString("en-US", { month: "short", timeZone })}
           </span>
           <span className="text-3xl font-bold leading-tight text-foreground">
-            {start.getDate()}
+            {getZonedParts(start, timeZone).day}
           </span>
           <span className="text-xs text-muted-foreground">
-            {start.toLocaleDateString("en-US", { weekday: "short" })}
+            {start.toLocaleDateString("en-US", { weekday: "short", timeZone })}
           </span>
         </div>
 
@@ -92,10 +93,10 @@ function AppointmentCard({ appointment, showActions, use24Hour }: { appointment:
                 </span>
               </div>
               <p className="mt-0.5 text-sm text-muted-foreground">
-                <span className="sm:hidden">{start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} · </span>
-                {formatTime(start, use24Hour)}
+                <span className="sm:hidden">{start.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone })} · </span>
+                {formatTime(start, use24Hour, timeZone)}
                 {" — "}
-                {formatTime(end, use24Hour)}
+                {formatTime(end, use24Hour, timeZone)}
               </p>
             </div>
 

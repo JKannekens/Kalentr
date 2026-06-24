@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { createBooking, getAvailableSlots } from "./actions";
 import { formatTime } from "@/lib/format-time";
+import { toDateKey } from "@/lib/timezone";
 import { MapPin } from "lucide-react";
 import type { Service, Availability, BookingConfig } from "@prisma/client";
 import type { TenantInfo } from "@/lib/tenant";
@@ -55,7 +56,7 @@ export function BookingForm({
       const result = await getAvailableSlots(
         tenant.id,
         service.id,
-        date.toISOString().split("T")[0]
+        toDateKey(date)
       );
       setSlots(result.slots);
       setStep("time");
@@ -80,7 +81,7 @@ export function BookingForm({
 
     const formData = new FormData(e.currentTarget);
     formData.set("serviceId", service.id);
-    formData.set("date", selectedDate.toISOString().split("T")[0]);
+    formData.set("date", toDateKey(selectedDate));
     formData.set("time", selectedTime);
 
     try {

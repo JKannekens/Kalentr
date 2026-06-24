@@ -31,7 +31,7 @@ export async function getAvailableSlots(
 ): Promise<{ slots: string[] }> {
   const service = await prisma.service.findFirst({
     where: { id: serviceId, tenantId, isActive: true },
-    select: { duration: true },
+    select: { duration: true, tenant: { select: { timezone: true } } },
   });
 
   if (!service) {
@@ -42,6 +42,7 @@ export async function getAvailableSlots(
     tenantId,
     serviceDuration: service.duration,
     date,
+    timeZone: service.tenant.timezone,
   });
 
   return { slots: slots.map((s) => s.label) };
@@ -88,6 +89,7 @@ export async function createBooking(formData: FormData): Promise<{
     tenantId: service.tenantId,
     serviceDuration: service.duration,
     date,
+    timeZone: service.tenant.timezone,
   });
   const slot = openSlots.find((s) => s.label === time);
 
@@ -152,14 +154,16 @@ export async function createBooking(formData: FormData): Promise<{
     return { success: false, error: "Something went wrong. Please try again." };
   }
 
-  // Send confirmation emails
+  // Send confirmation emails (rendered in the tenant's timezone)
+  const tz = service.tenant.timezone;
   const formattedDate = startTime.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: tz,
   });
-  const formattedTime = formatTime(startTime, service.tenant.use24Hour);
+  const formattedTime = formatTime(startTime, service.tenant.use24Hour, tz);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const cancellationUrl = `${appUrl}/cancel/${cancelToken}`;

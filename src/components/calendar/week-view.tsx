@@ -15,6 +15,7 @@ import {
   toLocalKey,
   formatTime,
 } from "./calendar-utils";
+import { zonedMinutes } from "@/lib/timezone";
 
 export interface WeekViewProps {
   appointmentsByDate: Map<string, AppointmentWithService[]>;
@@ -26,6 +27,7 @@ export interface WeekViewProps {
     anchorRect: DOMRect,
   ) => void;
   use24Hour: boolean;
+  timeZone: string;
   timeOff: TimeOff[];
 }
 
@@ -36,6 +38,7 @@ export function WeekView({
   onSelectDay,
   onAppointmentClick,
   use24Hour,
+  timeZone,
   timeOff,
 }: WeekViewProps) {
   const weekStart = getWeekStart(currentDate);
@@ -62,7 +65,7 @@ export function WeekView({
           const y = date.getFullYear();
           const m = date.getMonth();
           const d = date.getDate();
-          const todayCell = isTodayDate(y, m, d);
+          const todayCell = isTodayDate(y, m, d, timeZone);
           const timeOffEntry = getTimeOffForDay(y, m, d, timeOff);
           return (
             <div
@@ -145,8 +148,8 @@ export function WeekView({
                 {colAppts.map((app) => {
                   const start = new Date(app.startTime);
                   const end = new Date(app.endTime);
-                  const startMins = start.getHours() * 60 + start.getMinutes();
-                  const endMins = end.getHours() * 60 + end.getMinutes();
+                  const startMins = zonedMinutes(start, timeZone);
+                  const endMins = zonedMinutes(end, timeZone);
                   const top = ((startMins - DAY_START * 60) / 60) * HOUR_HEIGHT;
                   const height = Math.max(
                     ((endMins - startMins) / 60) * HOUR_HEIGHT,
@@ -169,7 +172,7 @@ export function WeekView({
                     >
                       <p className="font-semibold truncate">{app.service.name}</p>
                       {height >= 36 && (
-                        <p className="opacity-75 truncate">{formatTime(start, use24Hour)}</p>
+                        <p className="opacity-75 truncate">{formatTime(start, use24Hour, timeZone)}</p>
                       )}
                     </button>
                   );

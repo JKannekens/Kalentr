@@ -1,26 +1,31 @@
 import { prisma } from "@/lib/prisma";
 import { generateSlotInstants, type SlotInstant } from "@/lib/generate-slots";
+import { zonedTimeToUtc } from "@/lib/timezone";
 
 interface GetOpenSlotsInput {
   tenantId: string;
   serviceDuration: number; // minutes
   date: string; // YYYY-MM-DD
+  timeZone: string; // tenant IANA timezone
   now?: Date; // injectable for testing
 }
 
 /**
  * The single source of truth for what slots a client may book on a given day.
  * Used by both the slot picker (read) and `createBooking` (write) so the two
- * can never disagree. Enforces the weekly availability, per-booking buffer,
- * minimum advance notice, and the maximum booking window.
+ * can never disagree. Times are interpreted in the tenant's timezone. Enforces
+ * the weekly availability, per-booking buffer, minimum advance notice, and the
+ * maximum booking window.
  */
 export async function getOpenSlots({
   tenantId,
   serviceDuration,
   date,
+  timeZone,
   now = new Date(),
 }: GetOpenSlotsInput): Promise<SlotInstant[]> {
-  const dayOfWeek = new Date(date + "T00:00:00").getDay();
+  // Weekday of the calendar date (timezone-independent for a bare date).
+  const dayOfWeek = new Date(date + "T00:00:00Z").getUTCDay();
 
   const [availability, bookingConfig] = await Promise.all([
     prisma.availability.findMany({
@@ -36,14 +41,14 @@ export async function getOpenSlots({
   const minAdvanceHours = bookingConfig?.minAdvanceHours ?? 0;
   const maxAdvanceDays = bookingConfig?.maxAdvanceDays ?? 365;
 
-  const startOfDay = new Date(date + "T00:00:00");
-  const endOfDay = new Date(date + "T23:59:59");
+  // The tenant-local day, as a UTC window, to fetch that day's appointments.
+  const dayStart = zonedTimeToUtc(date, 0, 0, timeZone);
+  const dayEnd = new Date(dayStart.getTime() + 24 * 3_600_000);
 
   const existingAppointments = await prisma.appointment.findMany({
     where: {
       tenantId,
-      startTime: { gte: startOfDay },
-      endTime: { lte: endOfDay },
+      startTime: { gte: dayStart, lt: dayEnd },
       status: { notIn: ["CANCELLED"] },
     },
     select: { startTime: true, endTime: true },
@@ -62,5 +67,6 @@ export async function getOpenSlots({
     slotDuration,
     bufferMinutes,
     now: earliest,
+    timeZone,
   }).filter((slot) => slot.start <= latest);
 }

@@ -10,6 +10,7 @@ import {
   getColor,
   getTimeOffForDay,
 } from "./calendar-utils";
+import { getZonedParts } from "@/lib/timezone";
 
 export interface DayViewProps {
   appointments: AppointmentWithService[];
@@ -19,6 +20,7 @@ export interface DayViewProps {
     anchorRect: DOMRect,
   ) => void;
   use24Hour: boolean;
+  timeZone: string;
   timeOff: TimeOff[];
 }
 
@@ -27,6 +29,7 @@ export function DayView({
   currentDate,
   onAppointmentClick,
   use24Hour,
+  timeZone,
   timeOff,
 }: DayViewProps) {
   const hours = Array.from(
@@ -51,7 +54,8 @@ export function DayView({
       <div className="overflow-y-auto max-h-130">
         {hours.map((hour) => {
           const slotAppts = appointments.filter(
-            (app) => new Date(app.startTime).getHours() === hour,
+            (app) =>
+              getZonedParts(new Date(app.startTime), timeZone).hour === hour,
           );
           return (
             <div
@@ -76,8 +80,8 @@ export function DayView({
                   >
                     <p className="font-semibold">{app.service.name}</p>
                     <p className="opacity-75">
-                      {formatTime(new Date(app.startTime), use24Hour)} –{" "}
-                      {formatTime(new Date(app.endTime), use24Hour)} · {app.clientName}
+                      {formatTime(new Date(app.startTime), use24Hour, timeZone)} –{" "}
+                      {formatTime(new Date(app.endTime), use24Hour, timeZone)} · {app.clientName}
                     </p>
                   </button>
                 ))}

@@ -11,6 +11,7 @@ import {
   getWeekStart,
   toLocalKey,
 } from "./calendar-utils";
+import { zonedDateKey } from "@/lib/timezone";
 import { MonthView } from "./month-view";
 import { WeekView } from "./week-view";
 import { DayView } from "./day-view";
@@ -24,6 +25,7 @@ interface MonthCalendarProps {
     anchorRect: DOMRect,
   ) => void;
   use24Hour: boolean;
+  timeZone: string;
   timeOff: TimeOff[];
 }
 
@@ -33,6 +35,7 @@ export function Calendar({
   onDateSelect,
   onAppointmentClick,
   use24Hour,
+  timeZone,
   timeOff,
 }: MonthCalendarProps) {
   const [view, setView] = useState<CalendarView>("month");
@@ -40,7 +43,7 @@ export function Calendar({
 
   const appointmentsByDate = new Map<string, AppointmentWithService[]>();
   appointments.forEach((app) => {
-    const key = toLocalKey(new Date(app.startTime));
+    const key = zonedDateKey(new Date(app.startTime), timeZone);
     if (!appointmentsByDate.has(key)) appointmentsByDate.set(key, []);
     appointmentsByDate.get(key)!.push(app);
   });
@@ -161,6 +164,7 @@ export function Calendar({
           selectedDate={selectedDate}
           onSelectDay={selectDay}
           onAppointmentClick={onAppointmentClick}
+          timeZone={timeZone}
           timeOff={timeOff}
         />
       )}
@@ -173,6 +177,7 @@ export function Calendar({
           onSelectDay={selectDay}
           onAppointmentClick={onAppointmentClick}
           use24Hour={use24Hour}
+          timeZone={timeZone}
           timeOff={timeOff}
         />
       )}
@@ -183,6 +188,7 @@ export function Calendar({
           currentDate={currentDate}
           onAppointmentClick={onAppointmentClick}
           use24Hour={use24Hour}
+          timeZone={timeZone}
           timeOff={timeOff}
         />
       )}

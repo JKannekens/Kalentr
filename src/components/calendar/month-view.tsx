@@ -128,6 +128,7 @@ export interface MonthViewProps {
     appointment: AppointmentWithService,
     anchorRect: DOMRect,
   ) => void;
+  timeZone: string;
   timeOff: TimeOff[];
 }
 
@@ -137,6 +138,7 @@ export function MonthView({
   selectedDate,
   onSelectDay,
   onAppointmentClick,
+  timeZone,
   timeOff,
 }: MonthViewProps) {
   const year = currentDate.getFullYear();
@@ -199,7 +201,7 @@ export function MonthView({
               date={date}
               appointments={appointmentsByDate.get(key) ?? []}
               timeOffEntry={getTimeOffForDay(year, month, day, timeOff)}
-              isToday={isTodayDate(year, month, day)}
+              isToday={isTodayDate(year, month, day, timeZone)}
               isSelected={isSelected(year, month, day)}
               onSelect={() => onSelectDay(date)}
               onAppointmentClick={onAppointmentClick}
