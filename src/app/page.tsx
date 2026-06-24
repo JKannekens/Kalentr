@@ -237,7 +237,7 @@ export default function HomePage() {
                 Built for independent professionals
               </h2>
               <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-                No configuration nightmares. No overpowered enterprise features you'll never touch.
+                No configuration nightmares. No overpowered enterprise features you&apos;ll never touch.
                 Just what you need to run your bookings.
               </p>
             </div>
@@ -299,7 +299,7 @@ export default function HomePage() {
                 One price. No surprises.
               </h2>
               <p className="mt-4 text-gray-500 dark:text-gray-400">
-                Start free. Upgrade when you're ready.
+                Start free. Upgrade when you&apos;re ready.
               </p>
             </div>
 

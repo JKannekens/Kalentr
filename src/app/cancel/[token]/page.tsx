@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { CancelConfirm } from "./cancel-confirm";
 import { formatTime } from "@/lib/format-time";
+import { hoursUntil } from "@/lib/time-until";
 
 export default async function CancelPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -26,7 +27,7 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
     weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: tz,
   });
   const formattedTime = formatTime(appointment.startTime, appointment.tenant.use24Hour, tz);
-  const hoursUntil = (appointment.startTime.getTime() - Date.now()) / 3_600_000;
+  const hoursLeft = hoursUntil(appointment.startTime);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -39,7 +40,7 @@ export default async function CancelPage({ params }: { params: Promise<{ token: 
         primaryColor={appointment.tenant.primaryColor}
         date={formattedDate}
         time={formattedTime}
-        tooLate={hoursUntil < 1}
+        tooLate={hoursLeft < 1}
       />
     </div>
   );
