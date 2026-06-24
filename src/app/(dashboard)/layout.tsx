@@ -6,6 +6,7 @@ import { DashboardMobileNav } from "@/components/dashboard/dashboard-mobile-nav"
 import { UpgradeWall } from "@/components/dashboard/upgrade-wall";
 import { prisma } from "@/lib/prisma";
 import { isSubscriptionActive } from "@/lib/stripe";
+import { daysUntil } from "@/lib/time-until";
 import Link from "next/link";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -22,9 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const active = tenant ? isSubscriptionActive(tenant.subscriptionStatus, tenant.trialEndsAt) : true;
 
-  const daysLeft = tenant?.trialEndsAt
-    ? Math.max(0, Math.ceil((tenant.trialEndsAt.getTime() - Date.now()) / 86_400_000))
-    : undefined;
+  const daysLeft = tenant?.trialEndsAt ? daysUntil(tenant.trialEndsAt) : undefined;
 
   return (
     <div className="min-h-screen bg-background">

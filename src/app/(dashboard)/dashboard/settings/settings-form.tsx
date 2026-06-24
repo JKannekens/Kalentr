@@ -156,6 +156,8 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
                 className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               />
               {tenant.logo && (
+                // Arbitrary user-supplied URL — next/image can't optimize unknown remote hosts.
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={tenant.logo} alt="Logo preview" className="mt-2 h-12 w-auto rounded object-contain" />
               )}
             </div>
@@ -310,7 +312,7 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
               <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 text-sm dark:bg-gray-800 dark:border-gray-700">
                 <p className="font-medium text-gray-700 dark:text-gray-300 mb-2">How to connect your domain</p>
                 <ol className="space-y-1 text-gray-500 dark:text-gray-400 list-decimal list-inside">
-                  <li>Go to your domain registrar's DNS settings</li>
+                  <li>Go to your domain registrar&apos;s DNS settings</li>
                   <li>Add a <span className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">CNAME</span> record pointing to <span className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">{tenant.subdomain}.kalentr.com</span></li>
                   <li>Enter your custom domain above and save</li>
                 </ol>
