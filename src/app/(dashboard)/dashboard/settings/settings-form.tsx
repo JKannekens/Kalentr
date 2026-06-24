@@ -230,6 +230,20 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
               <p className="mt-1 text-xs text-gray-500">Gap added after each appointment before the next slot opens</p>
             </div>
 
+            <div>
+              <label htmlFor="cancellationNoticeHours" className="block text-sm font-medium">Cancellation notice (hours)</label>
+              <input
+                id="cancellationNoticeHours"
+                name="cancellationNoticeHours"
+                type="number"
+                min={0}
+                max={168}
+                defaultValue={bookingConfig?.cancellationNoticeHours ?? 1}
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <p className="mt-1 text-xs text-gray-500">Clients can&apos;t cancel within this many hours of the slot (0 = allow anytime)</p>
+            </div>
+
             <label htmlFor="requireApproval" className="flex items-start gap-3 rounded-md border px-3 py-3 cursor-pointer dark:border-gray-600">
               <input
                 id="requireApproval"

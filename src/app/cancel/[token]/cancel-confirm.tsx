@@ -15,10 +15,11 @@ interface Props {
   date: string;
   time: string;
   tooLate: boolean;
+  noticeHours: number;
 }
 
 export function CancelConfirm({
-  token, status, clientName, serviceName, businessName, primaryColor, date, time, tooLate,
+  token, status, clientName, serviceName, businessName, primaryColor, date, time, tooLate, noticeHours,
 }: Props) {
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -30,7 +31,7 @@ export function CancelConfirm({
     return <StatusCard icon={<AlertCircle className="h-8 w-8 text-gray-400" />} title="Can't cancel" body="This appointment has already been completed." />;
   }
   if (tooLate) {
-    return <StatusCard icon={<Clock className="h-8 w-8 text-amber-500" />} title="Too late to cancel" body="Appointments can't be cancelled less than 1 hour before the start time. Please contact the business directly." />;
+    return <StatusCard icon={<Clock className="h-8 w-8 text-amber-500" />} title="Too late to cancel" body={`Appointments can't be cancelled less than ${noticeHours} hour${noticeHours === 1 ? "" : "s"} before the start time. Please contact the business directly.`} />;
   }
   if (state === "done") {
     return <StatusCard icon={<CheckCircle2 className="h-8 w-8 text-emerald-500" />} title="Appointment cancelled" body={`Your ${serviceName} on ${date} at ${time} has been cancelled. A confirmation has been sent to your email.`} />;
