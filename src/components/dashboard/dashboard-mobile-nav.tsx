@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -43,8 +44,9 @@ export function DashboardMobileNav({ email, trialDaysLeft }: DashboardMobileNavP
         <Menu className="h-5 w-5" />
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-50">
+      {open &&
+        createPortal(
+          <div className="fixed inset-0 z-50 md:hidden">
           {/* Backdrop */}
           <button
             type="button"
@@ -113,8 +115,9 @@ export function DashboardMobileNav({ email, trialDaysLeft }: DashboardMobileNavP
               </div>
             )}
           </div>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
     </div>
   );
 }

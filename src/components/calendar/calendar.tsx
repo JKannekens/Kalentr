@@ -111,7 +111,7 @@ export function Calendar({
   return (
     <div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between px-6 py-4 border-b dark:border-gray-800 gap-3">
+      <div className="flex flex-wrap items-center justify-between px-4 py-4 border-b dark:border-gray-800 gap-3 sm:px-6">
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -121,7 +121,7 @@ export function Calendar({
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-base font-semibold tracking-tight px-2 min-w-48 text-center">
+          <h2 className="text-base font-semibold tracking-tight px-2 min-w-0 text-center sm:min-w-48">
             {title}
           </h2>
           <Button
