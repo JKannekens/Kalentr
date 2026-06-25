@@ -50,11 +50,6 @@ export default async function proxy(req: NextRequest) {
   const subdomain = extractSubdomain(req);
 
   if (subdomain) {
-    // Block access to admin page from subdomains
-    if (pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
     // Rewrite all subdomain paths to /tenant/{subdomain}/*
     return NextResponse.rewrite(
       new URL(`/tenant/${subdomain}${pathname}`, req.url),
