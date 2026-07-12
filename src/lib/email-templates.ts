@@ -285,7 +285,6 @@ interface AppointmentReminderProps extends BaseTemplateProps {
   time: string;
   duration: number;
   location?: string | null;
-  hoursUntil: number;
   cancellationUrl?: string;
 }
 
@@ -298,13 +297,12 @@ export function appointmentReminderEmail({
   time,
   duration,
   location,
-  hoursUntil,
   cancellationUrl,
 }: AppointmentReminderProps): string {
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 20px;">Appointment Reminder</h2>
     <p style="margin: 0 0 24px; color: #4b5563; font-size: 16px; line-height: 1.5;">
-      Hi ${clientName}, this is a reminder that you have an appointment ${hoursUntil === 24 ? "tomorrow" : `in ${hoursUntil} hours`}.
+      Hi ${clientName}, this is a reminder about your upcoming appointment on ${date}.
     </p>
     
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
