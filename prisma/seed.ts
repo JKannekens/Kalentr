@@ -17,15 +17,20 @@ async function main() {
   // is safe to run against production.
   await prisma.user.deleteMany({ where: { email: "demo@kalentr.com" } });
 
-  const passwordHash = await bcrypt.hash("password123", 10);
+  // The tenant needs an owner row, but the demo account should NOT be a
+  // usable login in production. A password is only set when
+  // SEED_DEMO_PASSWORD is provided (for local development); without it,
+  // password stays null and credentials sign-in rejects the account.
+  const demoPassword = process.env.SEED_DEMO_PASSWORD;
+  const passwordHash = demoPassword ? await bcrypt.hash(demoPassword, 10) : null;
 
   const user = await prisma.user.create({
     data: {
       name: "Alex Morgan",
       email: "demo@kalentr.com",
       password: passwordHash,
-      isVerified: true,
-      emailVerified: new Date(),
+      isVerified: Boolean(demoPassword),
+      emailVerified: demoPassword ? new Date() : null,
     },
   });
 
@@ -310,7 +315,11 @@ async function main() {
   );
 
   console.log("Seed complete.");
-  console.log("  User:   demo@kalentr.com / password123");
+  console.log(
+    demoPassword
+      ? "  User:   demo@kalentr.com (password from SEED_DEMO_PASSWORD)"
+      : "  User:   demo@kalentr.com (login disabled — no password set)"
+  );
   console.log("  Tenant: alexmorgan.kalentr.com");
 }
 
