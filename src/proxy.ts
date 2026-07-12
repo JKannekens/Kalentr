@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRootDomain } from "@/lib/root-domain";
 
 export const config = {
   matcher: [
@@ -33,8 +34,7 @@ function extractSubdomain(request: NextRequest): string | null {
     return null;
   }
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-  const rootDomainFormatted = rootDomain.split(":")[0];
+  const rootDomainFormatted = getRootDomain().split(":")[0];
 
   // Regular subdomain detection
   const isSubdomain =

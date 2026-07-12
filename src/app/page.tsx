@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LandingNav } from "@/components/landing-nav";
+import { tenantUrl } from "@/lib/root-domain";
 import {
   ArrowRight,
   BellRing,
@@ -432,8 +433,7 @@ const SHOWCASE = [
 export default function HomePage() {
   // The demo tenant must be visited on its subdomain — the tenant site's
   // internal links only resolve through the subdomain rewrite.
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-  const demoUrl = `${rootDomain.includes("localhost") ? "http" : "https"}://alexmorgan.${rootDomain}`;
+  const demoUrl = tenantUrl("alexmorgan");
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950 text-foreground">
