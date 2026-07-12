@@ -13,6 +13,7 @@ export type TenantInfo = {
   primaryColor: string;
   timezone: string;
   use24Hour: boolean;
+  isDemo: boolean;
 };
 
 /**
@@ -52,6 +53,7 @@ export const getTenant = cache(async (
       primaryColor: true,
       timezone: true,
       use24Hour: true,
+      isDemo: true,
     },
   });
   
@@ -77,6 +79,7 @@ export const getTenantByOwner = cache(async (
       primaryColor: true,
       timezone: true,
       use24Hour: true,
+      isDemo: true,
     },
   });
   

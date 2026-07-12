@@ -37,6 +37,7 @@ const SERVICE = {
     primaryColor: "#10b981",
     timezone: "UTC",
     use24Hour: false,
+    isDemo: false,
     location: null,
     owner: { email: "owner@example.com" },
   },
@@ -92,6 +93,18 @@ describe("createBooking", () => {
   it("rejects malformed input (bad date, bad email)", async () => {
     expect((await createBooking(makeFormData({ date: "10-06-2030" }))).error).toBe("Invalid booking data");
     expect((await createBooking(makeFormData({ clientEmail: "not-an-email" }))).error).toBe("Invalid booking data");
+  });
+
+  it("blocks bookings on demo tenants before anything is created or sent", async () => {
+    prismaMock.service.findFirst.mockResolvedValue({
+      ...SERVICE,
+      tenant: { ...SERVICE.tenant, isDemo: true },
+    });
+    const result = await createBooking(makeFormData());
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/demo/i);
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+    expect(sendEmailMock).not.toHaveBeenCalled();
   });
 
   it("rejects when the service is missing or inactive", async () => {

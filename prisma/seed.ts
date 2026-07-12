@@ -47,6 +47,7 @@ async function main() {
       primaryColor: "#6366f1",
       timezone: "Europe/Amsterdam",
       use24Hour: true,
+      isDemo: true,
       ownerId: user.id,
       subscriptionStatus: "trialing",
       trialEndsAt,
