@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createTenant, checkSubdomainAvailability } from "./actions";
+import { getRootDomain } from "@/lib/root-domain";
 import { CheckCircle2, Circle } from "lucide-react";
 
 export default function OnboardingPage() {
@@ -49,7 +50,7 @@ export default function OnboardingPage() {
     }
   }
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "kalentr.com";
+  const rootDomain = getRootDomain();
   const inputClass = "block w-full rounded-lg border bg-white px-3 py-2.5 text-sm shadow-sm transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:bg-gray-800 dark:border-gray-700";
 
   return (

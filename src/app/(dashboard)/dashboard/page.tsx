@@ -3,6 +3,7 @@ import { getTenantByOwner } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { DashboardContent } from "@/components/dashboard/dashboard-content";
+import { tenantUrl } from "@/lib/root-domain";
 import { CalendarDays, Briefcase, ExternalLink } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -28,10 +29,7 @@ export default async function DashboardPage() {
     }),
   ]);
 
-  const microSiteUrl =
-    process.env.NODE_ENV === "development"
-      ? `http://${tenant.subdomain}.localhost:3000`
-      : `https://${tenant.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+  const microSiteUrl = tenantUrl(tenant.subdomain);
 
   const now = new Date();
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
