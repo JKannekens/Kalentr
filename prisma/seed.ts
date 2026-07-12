@@ -11,13 +11,10 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log("Seeding database...");
 
-  // Clean up existing seed data
-  await prisma.appointment.deleteMany({});
-  await prisma.timeOff.deleteMany({});
-  await prisma.availability.deleteMany({});
-  await prisma.bookingConfig.deleteMany({});
-  await prisma.service.deleteMany({});
-  await prisma.tenant.deleteMany({});
+  // Clean up ONLY the demo account. Deleting the user cascades to its
+  // tenant and everything under it (services, availability, appointments,
+  // booking config, time off). Never touches other tenants' data, so this
+  // is safe to run against production.
   await prisma.user.deleteMany({ where: { email: "demo@kalentr.com" } });
 
   const passwordHash = await bcrypt.hash("password123", 10);
