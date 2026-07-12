@@ -322,7 +322,7 @@ export function BookingForm({
                 name="clientName"
                 type="text"
                 required
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -335,7 +335,7 @@ export function BookingForm({
                 name="clientEmail"
                 type="email"
                 required
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -347,7 +347,7 @@ export function BookingForm({
                 id="clientPhone"
                 name="clientPhone"
                 type="tel"
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
@@ -359,7 +359,7 @@ export function BookingForm({
                 id="notes"
                 name="notes"
                 rows={3}
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
 
