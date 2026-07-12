@@ -94,6 +94,7 @@ model Tenant {
   primaryColor String  @default("#3b82f6")
   timezone     String  @default("UTC")
   use24Hour    Boolean @default(false)
+  isDemo       Boolean @default(false) // Demo tenants are browsable but can't take bookings
 
   // Owner relationship
   ownerId String @unique

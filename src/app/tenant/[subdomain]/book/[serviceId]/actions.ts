@@ -90,6 +90,15 @@ export async function createBooking(formData: FormData): Promise<{
     return { success: false, error: "Service not found" };
   }
 
+  // Demo tenants are fully browsable but never take real bookings.
+  if (service.tenant.isDemo) {
+    return {
+      success: false,
+      error:
+        "This is a demo page — bookings can't be completed here. Sign up to create your own booking page!",
+    };
+  }
+
   const bookingConfig = await prisma.bookingConfig.findUnique({
     where: { tenantId: service.tenantId },
     select: { requireApproval: true },

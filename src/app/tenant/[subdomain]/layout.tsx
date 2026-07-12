@@ -1,4 +1,5 @@
 import { getTenant } from "@/lib/tenant";
+import { getRootDomain } from "@/lib/root-domain";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +25,9 @@ export default async function TenantLayout({
     .join("")
     .toUpperCase();
 
+  const rootDomain = getRootDomain();
+  const registerUrl = `${rootDomain.includes("localhost") ? "http" : "https"}://${rootDomain}/register`;
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -31,6 +35,15 @@ export default async function TenantLayout({
         background: `linear-gradient(to bottom right, ${tenant.primaryColor}14, #ffffff 60%)`,
       }}
     >
+      {tenant.isDemo && (
+        <div className="bg-gray-900 px-4 py-2 text-center text-xs text-white sm:text-sm">
+          You&apos;re viewing a demo — feel free to click around, bookings are disabled.{" "}
+          <a href={registerUrl} className="font-semibold text-emerald-400 underline underline-offset-2 hover:text-emerald-300">
+            Create your own page →
+          </a>
+        </div>
+      )}
+
       {/* Slim brand bar */}
       <header className="sticky top-0 z-20 border-b border-gray-200/70 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center gap-2.5 px-4 py-3 sm:px-6">
