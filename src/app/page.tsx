@@ -430,6 +430,11 @@ const SHOWCASE = [
 ];
 
 export default function HomePage() {
+  // The demo tenant must be visited on its subdomain — the tenant site's
+  // internal links only resolve through the subdomain rewrite.
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+  const demoUrl = `${rootDomain.includes("localhost") ? "http" : "https"}://alexmorgan.${rootDomain}`;
+
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950 text-foreground">
       <LandingNav />
@@ -470,9 +475,9 @@ export default function HomePage() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/tenant/alexmorgan" className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 underline underline-offset-4 transition-colors">
+                <a href={demoUrl} className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 underline underline-offset-4 transition-colors">
                   See a live example →
-                </Link>
+                </a>
               </div>
 
               <p className="mt-4 text-xs text-gray-400">
