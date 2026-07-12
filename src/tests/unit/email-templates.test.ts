@@ -163,16 +163,17 @@ describe("appointmentReminderEmail", () => {
     date: "Monday, January 15, 2030",
     time: "9:00 AM",
     duration: 60,
-    hoursUntil: 24,
   };
 
-  it("says 'tomorrow' when hoursUntil is 24", () => {
+  it("mentions the appointment date, not a relative time", () => {
     const html = appointmentReminderEmail(base);
-    expect(html).toContain("tomorrow");
+    expect(html).toContain("upcoming appointment on Monday, January 15, 2030");
+    expect(html).not.toContain("tomorrow");
   });
 
-  it("says 'in N hours' for other values", () => {
-    const html = appointmentReminderEmail({ ...base, hoursUntil: 2 });
-    expect(html).toContain("in 2 hours");
+  it("includes the time and service details", () => {
+    const html = appointmentReminderEmail(base);
+    expect(html).toContain("9:00 AM");
+    expect(html).toContain("Consultation");
   });
 });
