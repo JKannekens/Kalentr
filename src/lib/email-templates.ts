@@ -1,5 +1,8 @@
 // Email template utilities
 
+// Kalentr brand accent — matches the app's emerald primary color
+const BRAND_COLOR = "#059669";
+
 interface BaseTemplateProps {
   businessName: string;
   primaryColor?: string;
@@ -7,7 +10,7 @@ interface BaseTemplateProps {
 
 function baseTemplate(
   content: string,
-  { businessName, primaryColor = "#3b82f6" }: BaseTemplateProps,
+  { businessName, primaryColor = BRAND_COLOR }: BaseTemplateProps,
 ) {
   return `
 <!DOCTYPE html>
@@ -17,32 +20,27 @@ function baseTemplate(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${businessName}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 40px 16px;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border: 1px solid #e5e7eb; border-top: 4px solid ${primaryColor}; border-radius: 16px; overflow: hidden;">
           <!-- Header -->
           <tr>
-            <td style="background-color: ${primaryColor}; padding: 24px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">${businessName}</h1>
+            <td style="padding: 28px 32px 20px; border-bottom: 1px solid #f3f4f6;">
+              <h1 style="margin: 0; color: #111827; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">${businessName}</h1>
             </td>
           </tr>
           <!-- Content -->
           <tr>
-            <td style="padding: 32px 24px;">
+            <td style="padding: 28px 32px 32px;">
               ${content}
             </td>
           </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 24px; background-color: #f9fafb; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0; color: #6b7280; font-size: 14px;">
-                Powered by <a href="https://kalentr.com" style="color: ${primaryColor}; text-decoration: none;">Kalentr</a>
-              </p>
-            </td>
-          </tr>
         </table>
+        <p style="margin: 24px 0 0; color: #9ca3af; font-size: 13px; text-align: center;">
+          Powered by <a href="https://kalentr.com" style="color: ${primaryColor}; font-weight: 500; text-decoration: none;">Kalentr</a>
+        </p>
       </td>
     </tr>
   </table>
@@ -151,7 +149,7 @@ export function bookingConfirmationEmail({
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
       <tr>
         <td>
-          <a href="${calendarUrl}" style="display: inline-block; padding: 10px 18px; background-color: ${primaryColor || "#3b82f6"}; color: #ffffff; font-size: 14px; font-weight: 500; text-decoration: none; border-radius: 8px;">Add to Google Calendar</a>
+          <a href="${calendarUrl}" style="display: inline-block; padding: 10px 18px; background-color: ${primaryColor || BRAND_COLOR}; color: #ffffff; font-size: 14px; font-weight: 500; text-decoration: none; border-radius: 8px;">Add to Google Calendar</a>
           <span style="color: #6b7280; font-size: 13px; margin-left: 8px;">or open the attached invite</span>
         </td>
       </tr>
@@ -164,7 +162,7 @@ export function bookingConfirmationEmail({
       cancellationUrl
         ? `
     <p style="margin: 0; color: #6b7280; font-size: 14px;">
-      Need to cancel? <a href="${cancellationUrl}" style="color: ${primaryColor || "#3b82f6"}; text-decoration: none;">Click here</a>
+      Need to cancel? <a href="${cancellationUrl}" style="color: ${primaryColor || BRAND_COLOR}; text-decoration: none;">Click here</a>
     </p>
     `
         : ""
@@ -222,7 +220,7 @@ export function newBookingNotificationEmail({
             <tr>
               <td style="padding: 8px 0;">
                 <span style="color: #6b7280; font-size: 14px;">Email</span><br>
-                <a href="mailto:${clientEmail}" style="color: ${primaryColor || "#3b82f6"}; font-size: 16px; text-decoration: none;">${clientEmail}</a>
+                <a href="mailto:${clientEmail}" style="color: ${primaryColor || BRAND_COLOR}; font-size: 16px; text-decoration: none;">${clientEmail}</a>
               </td>
             </tr>
             ${
@@ -231,7 +229,7 @@ export function newBookingNotificationEmail({
             <tr>
               <td style="padding: 8px 0;">
                 <span style="color: #6b7280; font-size: 14px;">Phone</span><br>
-                <a href="tel:${clientPhone}" style="color: ${primaryColor || "#3b82f6"}; font-size: 16px; text-decoration: none;">${clientPhone}</a>
+                <a href="tel:${clientPhone}" style="color: ${primaryColor || BRAND_COLOR}; font-size: 16px; text-decoration: none;">${clientPhone}</a>
               </td>
             </tr>
             `
@@ -266,7 +264,7 @@ export function newBookingNotificationEmail({
       </tr>
     </table>
     
-    <a href="${dashboardUrl}" style="display: inline-block; background-color: ${primaryColor || "#3b82f6"}; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none; padding: 12px 24px; border-radius: 6px;">
+    <a href="${dashboardUrl}" style="display: inline-block; background-color: ${primaryColor || BRAND_COLOR}; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none; padding: 12px 24px; border-radius: 8px;">
       View in Dashboard
     </a>
   `;
@@ -341,7 +339,7 @@ export function appointmentReminderEmail({
       cancellationUrl
         ? `
     <p style="margin: 16px 0 0; color: #6b7280; font-size: 14px;">
-      Need to reschedule? <a href="${cancellationUrl}" style="color: ${primaryColor || "#3b82f6"}; text-decoration: none;">Click here</a>
+      Need to reschedule? <a href="${cancellationUrl}" style="color: ${primaryColor || BRAND_COLOR}; text-decoration: none;">Click here</a>
     </p>
     `
         : ""
@@ -370,7 +368,7 @@ export function emailVerificationEmail({
       Hi ${userName}, please verify your email address to complete your registration.
     </p>
     
-    <a href="${verificationUrl}" style="display: inline-block; background-color: #3b82f6; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none; padding: 12px 24px; border-radius: 6px; margin-bottom: 24px;">
+    <a href="${verificationUrl}" style="display: inline-block; background-color: ${BRAND_COLOR}; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin-bottom: 24px;">
       Verify Email
     </a>
     
@@ -381,7 +379,7 @@ export function emailVerificationEmail({
 
   return baseTemplate(content, {
     businessName: "Kalentr",
-    primaryColor: "#3b82f6",
+    primaryColor: BRAND_COLOR,
   });
 }
 
@@ -466,7 +464,7 @@ export function passwordResetEmail({
   userName,
   resetUrl,
   businessName = "Kalentr",
-  primaryColor = "#3b82f6",
+  primaryColor = BRAND_COLOR,
 }: PasswordResetProps): string {
   const content = `
     <h2 style="margin: 0 0 16px; color: #111827; font-size: 20px;">Reset your password</h2>
@@ -477,7 +475,7 @@ export function passwordResetEmail({
       We received a request to reset your password. Click the button below to set a new password. This link expires in one hour.
     </p>
 
-    <a href="${resetUrl}" style="display: inline-block; background-color: ${primaryColor}; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none; padding: 12px 24px; border-radius: 6px; margin-bottom: 24px;">
+    <a href="${resetUrl}" style="display: inline-block; background-color: ${primaryColor}; color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin-bottom: 24px;">
       Reset password
     </a>
 

@@ -1,7 +1,6 @@
 import { getTenant } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { CalendarDays, MapPin } from "lucide-react";
 import { ServiceGrid } from "./service-grid";
 import { OpeningHours } from "./opening-hours";
@@ -29,13 +28,6 @@ export default async function TenantHomePage({
     }),
   ]);
 
-  const initials = tenant.businessName
-    .split(" ")
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
   if (services.length === 0) {
     return (
       <div className="rounded-2xl border border-gray-200 bg-white py-20 text-center shadow-sm">
@@ -56,21 +48,14 @@ export default async function TenantHomePage({
         {/* Left: profile + services */}
         <div className="lg:col-span-3">
           <div className="mb-6 flex items-center gap-4">
-            {tenant.logo ? (
-              <Image
+            {tenant.logo && (
+              // Logo is a user-uploaded data URI — next/image can't optimize it.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
                 src={tenant.logo}
                 alt={tenant.businessName}
-                width={56}
-                height={56}
-                className="h-14 w-14 rounded-2xl object-cover shadow-sm"
+                className="h-14 w-14 shrink-0 rounded-2xl object-cover shadow-sm"
               />
-            ) : (
-              <div
-                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-xl font-bold text-white shadow-sm"
-                style={{ background: tenant.primaryColor }}
-              >
-                {initials}
-              </div>
             )}
             <div>
               <h1 className="text-xl font-bold tracking-tight text-gray-900">

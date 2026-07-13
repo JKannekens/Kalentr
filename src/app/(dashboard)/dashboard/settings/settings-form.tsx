@@ -79,6 +79,8 @@ function StatusMessages({ error, success }: { error: string | null; success: boo
 
 export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
   const [tab, setTab] = useState<Tab>("branding");
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [removeLogo, setRemoveLogo] = useState(false);
 
   const branding = useFormState();
   const booking = useFormState();
@@ -146,19 +148,39 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
             </div>
 
             <div>
-              <label htmlFor="logo" className="block text-sm font-medium">Logo URL</label>
+              <label htmlFor="logo" className="block text-sm font-medium">Logo</label>
               <input
                 id="logo"
                 name="logo"
-                type="url"
-                defaultValue={tenant.logo ?? ""}
-                placeholder="https://example.com/logo.png"
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  setLogoPreview(file ? URL.createObjectURL(file) : null);
+                  setRemoveLogo(false);
+                }}
+                className="mt-1 block w-full text-sm text-gray-500 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-emerald-900/30 dark:file:text-emerald-400"
               />
-              {tenant.logo && (
-                // Arbitrary user-supplied URL — next/image can't optimize unknown remote hosts.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={tenant.logo} alt="Logo preview" className="mt-2 h-12 w-auto rounded object-contain" />
+              <p className="mt-1 text-xs text-gray-500">PNG, JPG, or WebP — max 512KB. Leave empty to keep your current logo.</p>
+              <input type="hidden" name="removeLogo" value={removeLogo ? "true" : "false"} />
+              {(logoPreview || (tenant.logo && !removeLogo)) && (
+                <div className="mt-2 flex items-center gap-3">
+                  {/* Data URI / object URL preview — next/image can't optimize these. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={logoPreview ?? tenant.logo ?? ""} alt="Logo preview" className="h-12 w-auto rounded object-contain" />
+                  {tenant.logo && !logoPreview && (
+                    <button
+                      type="button"
+                      onClick={() => setRemoveLogo(true)}
+                      className="text-xs text-red-600 hover:text-red-700 font-medium"
+                    >
+                      Remove logo
+                    </button>
+                  )}
+                </div>
+              )}
+              {removeLogo && (
+                <p className="mt-2 text-xs text-amber-600">Logo will be removed when you save.</p>
               )}
             </div>
 
