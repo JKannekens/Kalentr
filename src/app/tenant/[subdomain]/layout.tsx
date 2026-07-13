@@ -1,7 +1,6 @@
 import { getTenant } from "@/lib/tenant";
 import { getRootDomain } from "@/lib/root-domain";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 
 export default async function TenantLayout({
@@ -17,13 +16,6 @@ export default async function TenantLayout({
   if (!tenant) {
     notFound();
   }
-
-  const initials = tenant.businessName
-    .split(" ")
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
 
   const rootDomain = getRootDomain();
   const registerUrl = `${rootDomain.includes("localhost") ? "http" : "https"}://${rootDomain}/register`;
@@ -48,21 +40,14 @@ export default async function TenantLayout({
       <header className="sticky top-0 z-20 border-b border-gray-200/70 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center gap-2.5 px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            {tenant.logo ? (
-              <Image
+            {tenant.logo && (
+              // Logo is a user-uploaded data URI — next/image can't optimize it.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
                 src={tenant.logo}
                 alt={tenant.businessName}
-                width={32}
-                height={32}
                 className="h-8 w-8 rounded-lg object-cover shadow-sm"
               />
-            ) : (
-              <span
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white shadow-sm"
-                style={{ background: tenant.primaryColor }}
-              >
-                {initials}
-              </span>
             )}
             <span className="font-semibold tracking-tight text-gray-900">
               {tenant.businessName}

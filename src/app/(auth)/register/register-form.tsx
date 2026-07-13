@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SsoButtons } from "@/components/auth/sso-buttons";
 import type { SsoProviderId } from "@/lib/sso";
+import { MailCheck } from "lucide-react";
 import { register } from "./actions";
 
 interface RegisterFormProps {
@@ -13,27 +13,53 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ ssoProviders }: RegisterFormProps) {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
+    const formData = new FormData(e.currentTarget);
     try {
-      const result = await register(new FormData(e.currentTarget));
+      const result = await register(formData);
       if (!result.success) {
         setError(result.error || "Registration failed");
       } else {
-        router.push("/login?registered=true");
+        setSubmittedEmail(formData.get("email") as string);
       }
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (submittedEmail) {
+    return (
+      <div className="rounded-2xl border bg-white shadow-sm dark:bg-gray-900 dark:border-gray-800 px-8 py-10 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/30">
+          <MailCheck className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight">Check your email</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          We sent a verification link to{" "}
+          <span className="font-medium text-foreground">{submittedEmail}</span>.
+          Click the link to activate your account.
+        </p>
+        <p className="mt-4 text-xs text-muted-foreground">
+          The link expires in 24 hours. Don&apos;t forget to check your spam folder.
+        </p>
+        <div className="mt-6 text-sm text-muted-foreground">
+          Already verified?{" "}
+          <Link href="/login" className="font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">
+            Sign in
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (

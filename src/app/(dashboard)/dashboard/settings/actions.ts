@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { getTenantByOwner } from "@/lib/tenant";
 import { revalidatePath } from "next/cache";
 
+const ALLOWED_LOGO_TYPES = ["image/png", "image/jpeg", "image/webp"];
+const MAX_LOGO_BYTES = 512 * 1024; // 512KB — stored as a data URI in the DB
+
 export async function updateBranding(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) return { success: false, error: "Not authenticated" };
@@ -16,17 +19,24 @@ export async function updateBranding(formData: FormData) {
   if (!businessName) return { success: false, error: "Business name is required" };
 
   const description = (formData.get("description") as string)?.trim() || null;
-  const logo = (formData.get("logo") as string)?.trim() || null;
   const location = (formData.get("location") as string)?.trim() || null;
   const primaryColor = (formData.get("primaryColor") as string)?.trim() || "#3b82f6";
 
-  // Validate logo URL if provided
-  if (logo) {
-    try {
-      new URL(logo);
-    } catch {
-      return { success: false, error: "Logo must be a valid URL" };
+  // Logo: keep existing unless a new file is uploaded or removal is requested
+  let logo = tenant.logo;
+  if (formData.get("removeLogo") === "true") {
+    logo = null;
+  }
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    if (!ALLOWED_LOGO_TYPES.includes(logoFile.type)) {
+      return { success: false, error: "Logo must be a PNG, JPG, or WebP image" };
     }
+    if (logoFile.size > MAX_LOGO_BYTES) {
+      return { success: false, error: "Logo must be smaller than 512KB" };
+    }
+    const buffer = Buffer.from(await logoFile.arrayBuffer());
+    logo = `data:${logoFile.type};base64,${buffer.toString("base64")}`;
   }
 
   await prisma.tenant.update({

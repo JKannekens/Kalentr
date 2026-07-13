@@ -34,6 +34,7 @@ export function ServicesSidebar({ services }: ServicesSidebarProps) {
           </Link>
         </div>
       ) : (
+        <>
         <div className="space-y-2 mb-4">
           {services.map((service) => (
             <div
@@ -62,13 +63,14 @@ export function ServicesSidebar({ services }: ServicesSidebarProps) {
             </div>
           ))}
         </div>
-      )}
 
-      <Link href="/dashboard/services" className="block">
-        <Button variant="outline" size="sm" className="w-full">
-          Manage Services
-        </Button>
-      </Link>
+        <Link href="/dashboard/services" className="block">
+          <Button variant="outline" size="sm" className="w-full">
+            Manage Services
+          </Button>
+        </Link>
+        </>
+      )}
     </div>
   );
 }
