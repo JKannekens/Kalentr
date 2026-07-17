@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { createTenant, checkSubdomainAvailability } from "./actions";
 import { createService } from "../dashboard/services/actions";
 import { getRootDomain } from "@/lib/root-domain";
+import { NativeSelect } from "@/components/ui/native-select";
 import { CheckCircle2, Circle, Clock } from "lucide-react";
 
 type Step = 1 | 2;
@@ -161,7 +162,7 @@ function TenantStep({ onDone }: { onDone: () => void }) {
 
         <div className="space-y-1.5">
           <label htmlFor="timezone" className="block text-sm font-medium">Your timezone</label>
-          <select
+          <NativeSelect
             id="timezone" name="timezone" defaultValue="America/New_York"
             className={inputClass}
           >
@@ -174,7 +175,7 @@ function TenantStep({ onDone }: { onDone: () => void }) {
             <option value="Europe/Amsterdam">Amsterdam (CET)</option>
             <option value="Asia/Tokyo">Tokyo (JST)</option>
             <option value="UTC">UTC</option>
-          </select>
+          </NativeSelect>
         </div>
 
         <Button
@@ -266,14 +267,14 @@ function ServicesStep() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label htmlFor="duration" className="block text-sm font-medium">Duration</label>
-            <select id="duration" name="duration" defaultValue="30" className={inputClass}>
+            <NativeSelect id="duration" name="duration" defaultValue="30" className={inputClass}>
               <option value="15">15 minutes</option>
               <option value="30">30 minutes</option>
               <option value="45">45 minutes</option>
               <option value="60">60 minutes</option>
               <option value="90">90 minutes</option>
               <option value="120">2 hours</option>
-            </select>
+            </NativeSelect>
           </div>
           <div className="space-y-1.5">
             <label htmlFor="price" className="block text-sm font-medium">

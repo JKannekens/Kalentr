@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
 import { updateBranding, updateBookingConfig, updateAccount, updateCustomDomain } from "./actions";
 import type { Tenant, BookingConfig } from "@prisma/client";
 
@@ -302,30 +303,32 @@ export function SettingsForm({ tenant, bookingConfig }: SettingsFormProps) {
 
             <div>
               <label htmlFor="timezone" className="block text-sm font-medium">Timezone</label>
-              <select
+              <NativeSelect
                 id="timezone"
                 name="timezone"
                 defaultValue={tenant.timezone}
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+                wrapperClassName="mt-1"
+                className="block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               >
                 {TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>{tz.replace(/_/g, " ")}</option>
                 ))}
-              </select>
+              </NativeSelect>
               <p className="mt-1 text-xs text-gray-500">Used to display appointment times correctly</p>
             </div>
 
             <div>
               <label htmlFor="timeFormat" className="block text-sm font-medium">Time format</label>
-              <select
+              <NativeSelect
                 id="timeFormat"
                 name="timeFormat"
                 defaultValue={tenant.use24Hour ? "24" : "12"}
-                className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
+                wrapperClassName="mt-1"
+                className="block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600"
               >
                 <option value="12">12-hour (1:30 PM)</option>
                 <option value="24">24-hour (13:30)</option>
-              </select>
+              </NativeSelect>
               <p className="mt-1 text-xs text-gray-500">How times appear on your microsite, emails, and dashboard</p>
             </div>
 

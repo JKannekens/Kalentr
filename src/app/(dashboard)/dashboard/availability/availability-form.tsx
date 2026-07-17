@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Button } from "@/components/ui/button";
 import { updateAvailability } from "./actions";
 import { formatTime } from "@/lib/format-time";
@@ -122,7 +123,7 @@ export function AvailabilityForm({ initialAvailability, use24Hour }: Availabilit
 
               {day.isActive ? (
                 <div className="flex items-center gap-2">
-                  <select
+                  <NativeSelect
                     value={day.startTime}
                     onChange={(e) =>
                       updateDay(day.dayOfWeek, { startTime: e.target.value })
@@ -134,9 +135,9 @@ export function AvailabilityForm({ initialAvailability, use24Hour }: Availabilit
                         {formatTime(time, use24Hour)}
                       </option>
                     ))}
-                  </select>
+                  </NativeSelect>
                   <span className="text-gray-500">to</span>
-                  <select
+                  <NativeSelect
                     value={day.endTime}
                     onChange={(e) =>
                       updateDay(day.dayOfWeek, { endTime: e.target.value })
@@ -148,7 +149,7 @@ export function AvailabilityForm({ initialAvailability, use24Hour }: Availabilit
                         {formatTime(time, use24Hour)}
                       </option>
                     ))}
-                  </select>
+                  </NativeSelect>
                 </div>
               ) : (
                 <span className="text-sm text-gray-500">Unavailable</span>
